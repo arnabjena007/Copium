@@ -70,7 +70,7 @@ export default function Page() {
               onChange={() => {}} 
               onSubmit={(e) => { 
                 e.preventDefault(); 
-                window.location.href="http://localhost:8501"; 
+                window.location.href="https://copium-hizs9rmhxfvw8fqkt7rjk2.streamlit.app"; 
               }} 
             />
           </motion.div>

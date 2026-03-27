@@ -67,7 +67,7 @@ export function IntegrationsCloud() {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7, delay: 0.3 }}
-            onClick={() => (window.location.href = "http://localhost:8501")}
+            onClick={() => (window.location.href = "https://copium-hizs9rmhxfvw8fqkt7rjk2.streamlit.app")}
           >
             Sync to Audit →
           </motion.button>

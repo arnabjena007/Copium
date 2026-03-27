@@ -9,7 +9,7 @@ export default function AuditPage() {
   useEffect(() => {
     if (complete) {
       setTimeout(() => {
-        window.location.href = "http://localhost:8501";
+        window.location.href = "https://copium-hizs9rmhxfvw8fqkt7rjk2.streamlit.app";
       }, 500);
     }
   }, [complete]);
