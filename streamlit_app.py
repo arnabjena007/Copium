@@ -20,6 +20,36 @@ DATA_PATH = ROOT / "data" / "mock_data.json"
 OLLAMA_URL = "http://localhost:11434/api/generate"
 OLLAMA_MODEL = "llama3.2"
 
+def generate_consultant_insight(incident: Dict[str, Any], spike_impact: float) -> str:
+    """Call Ollama llama3.2 locally to generate a FinOps consultant insight."""
+    prompt = (
+        f"You are a senior AWS FinOps consultant. Be concise (3-4 sentences max).\n\n"
+        f"Anomaly detected on resource: {incident.get('resource', 'Unknown')} "
+        f"(Service: {incident.get('service', 'Unknown')}).\n"
+        f"Estimated waste: ${spike_impact:,.0f}.\n"
+        f"Anomaly score: {incident.get('anomaly_score', 0):.2f}.\n\n"
+        f"Explain what likely caused this spike, what the financial risk is, "
+        f"and recommend the single most impactful remediation action."
+    )
+    try:
+        response = requests.post(
+            OLLAMA_URL,
+            json={"model": OLLAMA_MODEL, "prompt": prompt, "stream": False},
+            timeout=30,
+        )
+        if response.status_code == 200:
+            return response.json().get("response", "").strip()
+    except Exception:
+        pass
+    # Graceful fallback if Ollama is not running
+    return (
+        f"⚠️ AI Consultant offline (Ollama not running locally). "
+        f"Resource **{incident.get('resource', 'Unknown')}** shows an anomaly score of "
+        f"**{incident.get('anomaly_score', 0):.2f}** with an estimated waste of "
+        f"**${spike_impact:,.0f}**. Recommended action: review EC2 rightsizing and "
+        f"enable Compute Savings Plans for immediate cost recovery."
+    )
+
 # Session state init
 if "boto_fixed" not in st.session_state:
     st.session_state.boto_fixed = False
