@@ -23,9 +23,12 @@ export default function DashboardPage() {
 
   const fetchData = async () => {
     try {
-      // In production, /api/dashboard is served relative to the domain
-      // In development, Next.js proxy or Vercel Local will handle it
-      const response = await fetch("/api/dashboard");
+      // Use absolute URL for local development (8000) and relative for production
+      const apiUrl = process.env.NODE_ENV === 'production' 
+        ? "/api/dashboard" 
+        : "http://localhost:8000/api/dashboard";
+        
+      const response = await fetch(apiUrl);
       if (!response.ok) throw new Error("Failed to fetch dashboard metrics");
       const result = await response.json();
       setData(result);
