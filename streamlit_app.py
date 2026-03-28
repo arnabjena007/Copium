@@ -890,63 +890,7 @@ def main() -> None:
             unsafe_allow_html=True,
         )
 
-        st.markdown(
-            '<div class="section-title">🤖 LLM Solution Generator</div>',
-            unsafe_allow_html=True,
-        )
 
-        spike_impact = sum(r.get("cost_usd", 0) for r in incidents) * 0.85
-
-        if st.session_state.get("last_selected_anomaly") != featured.get("resource_id"):
-            st.session_state.pop("ollama_message", None)
-            st.session_state.pop("typed_out", None)
-            st.session_state.last_selected_anomaly = featured.get("resource_id")
-
-        if st.session_state.boto_fixed:
-            explanation = f"Audit update. I've successfully executed the remediation protocol on {featured.get('resource_id', 'Unknown')}."
-        else:
-            if "ollama_message" not in st.session_state:
-                with st.spinner("Generating Architecture Solution..."):
-                    st.session_state.ollama_message = generate_consultant_insight(
-                        featured, spike_impact
-                    )
-            explanation = st.session_state.ollama_message
-
-        with st.chat_message("assistant"):
-            if "typed_out" not in st.session_state:
-                st.markdown(
-                    '<span style="color:#FF8101;font-weight:700;">AWS Architect generating script...</span>',
-                    unsafe_allow_html=True,
-                )
-                st.write_stream(typewriter_generator(explanation))
-                st.session_state.typed_out = True
-            else:
-                st.write(explanation)
-
-            if not st.session_state.boto_fixed:
-                st.markdown("<br>", unsafe_allow_html=True)
-                col_btn1, col_btn2 = st.columns(2)
-                with col_btn1:
-                    if st.button(
-                        "Apply Fix Script", type="primary", use_container_width=True
-                    ):
-                        anomaly_model = CostAnomaly(**featured)
-                        with st.spinner("Executing..."):
-                            res = fix_resource(
-                                anomaly_model, totals["total_burn"], totals["savings"]
-                            )
-                            st.session_state.boto_fixed = True
-                            st.session_state.pop("typed_out", None)
-                            st.session_state.pop("ollama_message", None)
-                            st.rerun()
-                with col_btn2:
-                    st.download_button(
-                        label="Download .sh Fix",
-                        data=explanation,
-                        file_name=f"remediate_{featured.get('resource_id', 'id')}.sh",
-                        mime="text/x-shellscript",
-                        use_container_width=True,
-                    )
 
 
 if __name__ == "__main__":
