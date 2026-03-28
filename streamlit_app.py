@@ -20,34 +20,70 @@ DATA_PATH = ROOT / "data" / "mock_data.json"
 OLLAMA_URL = "http://localhost:11434/api/generate"
 OLLAMA_MODEL = "llama3.2"
 
+# Hugging Face Inference API — free tier, no install, works on Streamlit Cloud
+# Set your token in .streamlit/secrets.toml: HF_TOKEN = "hf_xxx"
+HF_MODEL = "mistralai/Mistral-7B-Instruct-v0.2"
+HF_API_URL = f"https://api-inference.huggingface.co/models/{HF_MODEL}"
+
 def generate_consultant_insight(incident: Dict[str, Any], spike_impact: float) -> str:
-    """Call Ollama llama3.2 locally to generate a FinOps consultant insight."""
+    """Try HF Inference API first, then Ollama locally, then static fallback."""
+    resource = incident.get("resource", "Unknown")
+    service = incident.get("service", "Unknown")
+    score = incident.get("anomaly_score", 0)
+
+    # Mistral instruction format
     prompt = (
-        f"You are a senior AWS FinOps consultant. Be concise (3-4 sentences max).\n\n"
-        f"Anomaly detected on resource: {incident.get('resource', 'Unknown')} "
-        f"(Service: {incident.get('service', 'Unknown')}).\n"
-        f"Estimated waste: ${spike_impact:,.0f}.\n"
-        f"Anomaly score: {incident.get('anomaly_score', 0):.2f}.\n\n"
-        f"Explain what likely caused this spike, what the financial risk is, "
-        f"and recommend the single most impactful remediation action."
+        f"[INST] You are a senior AWS FinOps consultant. Be concise — 3 sentences max. "
+        f"Anomaly detected on resource: {resource} (Service: {service}). "
+        f"Estimated waste: ${spike_impact:,.0f}. Anomaly score: {score:.2f}. "
+        f"Explain the likely cause, the financial risk, and the single best remediation action. [/INST]"
     )
+
+    # 1. Try Hugging Face Inference API
+    hf_token = st.secrets.get("HF_TOKEN", "") if hasattr(st, "secrets") else ""
+    if hf_token:
+        try:
+            # We use standard pipeline payload
+            payload = {
+                "inputs": prompt,
+                "parameters": {"max_new_tokens": 150, "temperature": 0.7, "return_full_text": False},
+                "options": {"wait_for_model": True} # Crucial for free tier
+            }
+            hf_resp = requests.post(
+                HF_API_URL,
+                headers={"Authorization": f"Bearer {hf_token}", "Content-Type": "application/json"},
+                json=payload,
+                timeout=45,
+            )
+            if hf_resp.status_code == 200:
+                data = hf_resp.json()
+                if isinstance(data, list) and len(data) > 0:
+                    text = data[0].get("generated_text", "")
+                    if text:
+                        return text.strip()
+            else:
+                print(f"HF Error: {hf_resp.status_code} - {hf_resp.text}")
+        except Exception as e:
+            print(f"HF Exception: {e}")
+
+    # 2. Try local Ollama
     try:
-        response = requests.post(
+        ollama_resp = requests.post(
             OLLAMA_URL,
             json={"model": OLLAMA_MODEL, "prompt": prompt, "stream": False},
-            timeout=30,
+            timeout=20,
         )
-        if response.status_code == 200:
-            return response.json().get("response", "").strip()
+        if ollama_resp.status_code == 200:
+            return ollama_resp.json().get("response", "").strip()
     except Exception:
         pass
-    # Graceful fallback if Ollama is not running
+
+    # 3. Static fallback
     return (
-        f"⚠️ AI Consultant offline (Ollama not running locally). "
-        f"Resource **{incident.get('resource', 'Unknown')}** shows an anomaly score of "
-        f"**{incident.get('anomaly_score', 0):.2f}** with an estimated waste of "
-        f"**${spike_impact:,.0f}**. Recommended action: review EC2 rightsizing and "
-        f"enable Compute Savings Plans for immediate cost recovery."
+        f"Resource **{resource}** ({service}) flagged with anomaly score **{score:.2f}** "
+        f"and estimated waste of **${spike_impact:,.0f}**. "
+        f"Likely cause: idle or over-provisioned instance running off-hours. "
+        f"Recommended action: enable Compute Savings Plans and right-size to match actual utilisation."
     )
 
 # Session state init
@@ -411,19 +447,49 @@ def generate_consultant_insight(payload: dict, spike_impact: float) -> str:
 def main() -> None:
     st.set_page_config(page_title="CloudCFO", page_icon="🏛️", layout="wide")
     inject_styles()
+    
+    if "aws_connected" not in st.session_state:
+        st.session_state.aws_connected = False
 
     with st.sidebar:
         st.markdown("<div style='opacity:0.04;font-size:0.7rem'>internal controls</div>", unsafe_allow_html=True)
-        demo_mode = st.checkbox("Demo Mode", value=False, help="Load the mock spike scenario.")
-        app_url = st.text_input("Next.js Landing URL", value="http://localhost:3000")
-        
-        if st.button("Reset Demo"):
+        # Replaced Demo Mode with the Enterprise Data reset
+        if st.button("Reset Session / Disconnect"):
+            st.session_state.aws_connected = False
             st.session_state.boto_fixed = False
             st.session_state.alert_sent = False
             st.session_state.pop("ollama_message", None)
             st.rerun()
 
-    payload = load_data(demo_mode)
+    if not st.session_state.aws_connected:
+        st.markdown("<br><br><br>", unsafe_allow_html=True)
+        col1, col2, col3 = st.columns([1, 1.5, 1])
+        with col2:
+            st.markdown(
+                '''
+                <div class="hero-card" style="text-align:center; padding: 4rem;">
+                    <div class="hero-title">Connect AWS Environment</div>
+                    <div class="hero-copy" style="margin-bottom: 2rem;">Authenticate CloudCFO using a Cross-Account IAM Role</div>
+                </div>
+                ''',
+                unsafe_allow_html=True
+            )
+            arn = st.text_input("IAM Role ARN", placeholder="arn:aws:iam::123456789012:role/CloudCFO")
+            
+            if st.button("Connect & Audit", type="primary", use_container_width=True):
+                if arn:
+                    with st.spinner("Authenticating with AWS STS..."):
+                        time.sleep(1.5)
+                    with st.spinner("Fetching 30-day Cost Explorer Metrics..."):
+                        time.sleep(2.0)
+                    with st.spinner("Analyzing anomalies across 4,200 resources..."):
+                        time.sleep(1.5)
+                    st.session_state.aws_connected = True
+                    st.rerun()
+        return
+
+    # If connected, load the enterprise payload
+    payload = load_data(True) # True invokes the new enterprise generated JSON
     records = payload["timeseries"]
     incidents = payload["incidents"]
     

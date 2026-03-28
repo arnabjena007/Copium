@@ -1,32 +1,728 @@
 {
   "baseline": {
     "timeseries": [
-      { "date": "2026-03-01", "cost_original": 3100, "cost_optimized": 2650, "anomaly_score": 0.42, "wasted_cost": 190, "service": "EC2", "resource": "prod-api-asg", "owner": "Platform", "reason": "slightly oversized instances" },
-      { "date": "2026-03-02", "cost_original": 3220, "cost_optimized": 2710, "anomaly_score": 0.51, "wasted_cost": 210, "service": "RDS", "resource": "prod-db-cluster", "owner": "Data", "reason": "overprovisioned storage headroom" },
-      { "date": "2026-03-03", "cost_original": 3180, "cost_optimized": 2695, "anomaly_score": 0.47, "wasted_cost": 205, "service": "EC2", "resource": "batch-workers", "owner": "Analytics", "reason": "workers running after queue drain" },
-      { "date": "2026-03-04", "cost_original": 3290, "cost_optimized": 2740, "anomaly_score": 0.55, "wasted_cost": 220, "service": "EKS", "resource": "observability-nodes", "owner": "SRE", "reason": "idle overnight node pool" },
-      { "date": "2026-03-05", "cost_original": 3350, "cost_optimized": 2780, "anomaly_score": 0.58, "wasted_cost": 236, "service": "EC2", "resource": "ml-trainers", "owner": "ML", "reason": "training fleet left warm" },
-      { "date": "2026-03-06", "cost_original": 3410, "cost_optimized": 2825, "anomaly_score": 0.61, "wasted_cost": 242, "service": "RDS", "resource": "prod-db-reader", "owner": "Data", "reason": "reader replica underutilized" },
-      { "date": "2026-03-07", "cost_original": 3380, "cost_optimized": 2810, "anomaly_score": 0.57, "wasted_cost": 231, "service": "S3", "resource": "media-archive", "owner": "Core", "reason": "standard tier for archive objects" }
+      {
+        "date": "2026-02-26",
+        "cost_original": 8851,
+        "cost_optimized": 7523,
+        "anomaly_score": 0.2925695118561073,
+        "wasted_cost": 1328,
+        "service": "EKS",
+        "resource": "cluster-node-35",
+        "owner": "Platform",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-02-27",
+        "cost_original": 8348,
+        "cost_optimized": 7095,
+        "anomaly_score": 0.1319274017859113,
+        "wasted_cost": 1253,
+        "service": "RDS",
+        "resource": "cluster-node-27",
+        "owner": "Security",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-02-28",
+        "cost_original": 8367,
+        "cost_optimized": 7111,
+        "anomaly_score": 0.27642553666985376,
+        "wasted_cost": 1256,
+        "service": "S3",
+        "resource": "cluster-node-69",
+        "owner": "Platform",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-01",
+        "cost_original": 8863,
+        "cost_optimized": 7533,
+        "anomaly_score": 0.19143186872475731,
+        "wasted_cost": 1330,
+        "service": "ElastiCache",
+        "resource": "cluster-node-66",
+        "owner": "Security",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-02",
+        "cost_original": 8102,
+        "cost_optimized": 6886,
+        "anomaly_score": 0.21289363511696863,
+        "wasted_cost": 1216,
+        "service": "ElastiCache",
+        "resource": "cluster-node-30",
+        "owner": "Platform",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-03",
+        "cost_original": 8528,
+        "cost_optimized": 7248,
+        "anomaly_score": 0.1358458226747015,
+        "wasted_cost": 1280,
+        "service": "Kafka",
+        "resource": "cluster-node-94",
+        "owner": "Platform",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-04",
+        "cost_original": 8467,
+        "cost_optimized": 7196,
+        "anomaly_score": 0.14324310990619726,
+        "wasted_cost": 1271,
+        "service": "Kafka",
+        "resource": "cluster-node-30",
+        "owner": "Core",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-05",
+        "cost_original": 8664,
+        "cost_optimized": 7364,
+        "anomaly_score": 0.30492307458212514,
+        "wasted_cost": 1300,
+        "service": "Kafka",
+        "resource": "cluster-node-27",
+        "owner": "Platform",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-06",
+        "cost_original": 8233,
+        "cost_optimized": 6998,
+        "anomaly_score": 0.270218629001421,
+        "wasted_cost": 1235,
+        "service": "S3",
+        "resource": "cluster-node-91",
+        "owner": "Core",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-07",
+        "cost_original": 8088,
+        "cost_optimized": 6874,
+        "anomaly_score": 0.30094482893814434,
+        "wasted_cost": 1214,
+        "service": "S3",
+        "resource": "cluster-node-61",
+        "owner": "Data",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-08",
+        "cost_original": 8442,
+        "cost_optimized": 7175,
+        "anomaly_score": 0.35198820862399727,
+        "wasted_cost": 1267,
+        "service": "EC2",
+        "resource": "cluster-node-74",
+        "owner": "Platform",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-09",
+        "cost_original": 8338,
+        "cost_optimized": 7087,
+        "anomaly_score": 0.24503770033222746,
+        "wasted_cost": 1251,
+        "service": "Kafka",
+        "resource": "cluster-node-33",
+        "owner": "Core",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-10",
+        "cost_original": 16801,
+        "cost_optimized": 7055,
+        "anomaly_score": 0.89,
+        "wasted_cost": 9746,
+        "service": "RDS",
+        "resource": "prod-analytics-db",
+        "owner": "Data",
+        "reason": "IOPS provisioned way beyond actual usage requirement"
+      },
+      {
+        "date": "2026-03-11",
+        "cost_original": 8742,
+        "cost_optimized": 7430,
+        "anomaly_score": 0.35515080971036417,
+        "wasted_cost": 1312,
+        "service": "Kafka",
+        "resource": "cluster-node-86",
+        "owner": "Core",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-12",
+        "cost_original": 8470,
+        "cost_optimized": 7199,
+        "anomaly_score": 0.20065421696073193,
+        "wasted_cost": 1271,
+        "service": "S3",
+        "resource": "cluster-node-25",
+        "owner": "Security",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-13",
+        "cost_original": 8828,
+        "cost_optimized": 7503,
+        "anomaly_score": 0.18263213703825643,
+        "wasted_cost": 1325,
+        "service": "ElastiCache",
+        "resource": "cluster-node-61",
+        "owner": "Security",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-14",
+        "cost_original": 8104,
+        "cost_optimized": 6888,
+        "anomaly_score": 0.15611352269670117,
+        "wasted_cost": 1216,
+        "service": "S3",
+        "resource": "cluster-node-78",
+        "owner": "Data",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-15",
+        "cost_original": 8305,
+        "cost_optimized": 7059,
+        "anomaly_score": 0.23894654780354388,
+        "wasted_cost": 1246,
+        "service": "RDS",
+        "resource": "cluster-node-81",
+        "owner": "Platform",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-16",
+        "cost_original": 8519,
+        "cost_optimized": 7241,
+        "anomaly_score": 0.31174446272086415,
+        "wasted_cost": 1278,
+        "service": "ElastiCache",
+        "resource": "cluster-node-66",
+        "owner": "Data",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-17",
+        "cost_original": 19825,
+        "cost_optimized": 7331,
+        "anomaly_score": 0.94,
+        "wasted_cost": 12494,
+        "service": "EC2",
+        "resource": "spark-worker-fleet",
+        "owner": "DataEngineering",
+        "reason": "on-demand instances used instead of spot for massive batch job"
+      },
+      {
+        "date": "2026-03-18",
+        "cost_original": 8606,
+        "cost_optimized": 7315,
+        "anomaly_score": 0.35287884837720096,
+        "wasted_cost": 1291,
+        "service": "S3",
+        "resource": "cluster-node-38",
+        "owner": "Security",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-19",
+        "cost_original": 8967,
+        "cost_optimized": 7621,
+        "anomaly_score": 0.35193707922990647,
+        "wasted_cost": 1346,
+        "service": "S3",
+        "resource": "cluster-node-67",
+        "owner": "Platform",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-20",
+        "cost_original": 8069,
+        "cost_optimized": 6858,
+        "anomaly_score": 0.1524189567407253,
+        "wasted_cost": 1211,
+        "service": "Kafka",
+        "resource": "cluster-node-22",
+        "owner": "Platform",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-21",
+        "cost_original": 8756,
+        "cost_optimized": 7442,
+        "anomaly_score": 0.2645263188136766,
+        "wasted_cost": 1314,
+        "service": "EKS",
+        "resource": "cluster-node-34",
+        "owner": "Platform",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-22",
+        "cost_original": 8472,
+        "cost_optimized": 7201,
+        "anomaly_score": 0.3983998779414739,
+        "wasted_cost": 1271,
+        "service": "EC2",
+        "resource": "cluster-node-75",
+        "owner": "Core",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-23",
+        "cost_original": 23342,
+        "cost_optimized": 7515,
+        "anomaly_score": 0.98,
+        "wasted_cost": 15827,
+        "service": "SageMaker",
+        "resource": "train-job-x99-xlarge",
+        "owner": "DataScience",
+        "reason": "runaway hyperparameter tuning job left running over the weekend"
+      },
+      {
+        "date": "2026-03-24",
+        "cost_original": 8674,
+        "cost_optimized": 7372,
+        "anomaly_score": 0.2662634301106288,
+        "wasted_cost": 1302,
+        "service": "S3",
+        "resource": "cluster-node-19",
+        "owner": "Core",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-25",
+        "cost_original": 8567,
+        "cost_optimized": 7281,
+        "anomaly_score": 0.35973258353721105,
+        "wasted_cost": 1286,
+        "service": "S3",
+        "resource": "cluster-node-44",
+        "owner": "Core",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-26",
+        "cost_original": 8264,
+        "cost_optimized": 7024,
+        "anomaly_score": 0.2097613158191921,
+        "wasted_cost": 1240,
+        "service": "ElastiCache",
+        "resource": "cluster-node-91",
+        "owner": "Data",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-27",
+        "cost_original": 8740,
+        "cost_optimized": 7429,
+        "anomaly_score": 0.33335538013766164,
+        "wasted_cost": 1311,
+        "service": "EKS",
+        "resource": "cluster-node-34",
+        "owner": "Platform",
+        "reason": "general resource bloat"
+      }
     ],
     "incidents": [
-      { "service": "EC2", "resource": "batch-workers", "owner": "Analytics", "anomaly_score": 0.78, "cost_original": 3180, "cost_optimized": 2695, "reason": "workers running after queue drain" },
-      { "service": "RDS", "resource": "prod-db-reader", "owner": "Data", "anomaly_score": 0.74, "cost_original": 3410, "cost_optimized": 2825, "reason": "reader replica underutilized" }
+      {
+        "service": "RDS",
+        "resource": "prod-analytics-db",
+        "owner": "Data",
+        "anomaly_score": 0.89,
+        "cost_original": 16801,
+        "cost_optimized": 7055,
+        "reason": "IOPS provisioned way beyond actual usage requirement"
+      },
+      {
+        "service": "EC2",
+        "resource": "spark-worker-fleet",
+        "owner": "DataEngineering",
+        "anomaly_score": 0.94,
+        "cost_original": 19825,
+        "cost_optimized": 7331,
+        "reason": "on-demand instances used instead of spot for massive batch job"
+      },
+      {
+        "service": "SageMaker",
+        "resource": "train-job-x99-xlarge",
+        "owner": "DataScience",
+        "anomaly_score": 0.98,
+        "cost_original": 23342,
+        "cost_optimized": 7515,
+        "reason": "runaway hyperparameter tuning job left running over the weekend"
+      }
     ]
   },
   "demo": {
     "timeseries": [
-      { "date": "2026-03-01", "cost_original": 3100, "cost_optimized": 2650, "anomaly_score": 0.42, "wasted_cost": 190, "service": "EC2", "resource": "prod-api-asg", "owner": "Platform", "reason": "slightly oversized instances" },
-      { "date": "2026-03-02", "cost_original": 3220, "cost_optimized": 2710, "anomaly_score": 0.51, "wasted_cost": 210, "service": "RDS", "resource": "prod-db-cluster", "owner": "Data", "reason": "overprovisioned storage headroom" },
-      { "date": "2026-03-03", "cost_original": 3180, "cost_optimized": 2695, "anomaly_score": 0.47, "wasted_cost": 205, "service": "EC2", "resource": "batch-workers", "owner": "Analytics", "reason": "workers running after queue drain" },
-      { "date": "2026-03-04", "cost_original": 3290, "cost_optimized": 2740, "anomaly_score": 0.55, "wasted_cost": 220, "service": "EKS", "resource": "observability-nodes", "owner": "SRE", "reason": "idle overnight node pool" },
-      { "date": "2026-03-05", "cost_original": 6120, "cost_optimized": 2780, "anomaly_score": 0.93, "wasted_cost": 3010, "service": "EC2", "resource": "dev-p3-training", "owner": "ML", "reason": "a P3 instance was left running all weekend" },
-      { "date": "2026-03-06", "cost_original": 3410, "cost_optimized": 2825, "anomaly_score": 0.61, "wasted_cost": 242, "service": "RDS", "resource": "prod-db-reader", "owner": "Data", "reason": "reader replica underutilized" },
-      { "date": "2026-03-07", "cost_original": 3380, "cost_optimized": 2810, "anomaly_score": 0.57, "wasted_cost": 231, "service": "S3", "resource": "media-archive", "owner": "Core", "reason": "standard tier for archive objects" }
+      {
+        "date": "2026-02-26",
+        "cost_original": 8851,
+        "cost_optimized": 7523,
+        "anomaly_score": 0.2925695118561073,
+        "wasted_cost": 1328,
+        "service": "EKS",
+        "resource": "cluster-node-35",
+        "owner": "Platform",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-02-27",
+        "cost_original": 8348,
+        "cost_optimized": 7095,
+        "anomaly_score": 0.1319274017859113,
+        "wasted_cost": 1253,
+        "service": "RDS",
+        "resource": "cluster-node-27",
+        "owner": "Security",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-02-28",
+        "cost_original": 8367,
+        "cost_optimized": 7111,
+        "anomaly_score": 0.27642553666985376,
+        "wasted_cost": 1256,
+        "service": "S3",
+        "resource": "cluster-node-69",
+        "owner": "Platform",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-01",
+        "cost_original": 8863,
+        "cost_optimized": 7533,
+        "anomaly_score": 0.19143186872475731,
+        "wasted_cost": 1330,
+        "service": "ElastiCache",
+        "resource": "cluster-node-66",
+        "owner": "Security",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-02",
+        "cost_original": 8102,
+        "cost_optimized": 6886,
+        "anomaly_score": 0.21289363511696863,
+        "wasted_cost": 1216,
+        "service": "ElastiCache",
+        "resource": "cluster-node-30",
+        "owner": "Platform",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-03",
+        "cost_original": 8528,
+        "cost_optimized": 7248,
+        "anomaly_score": 0.1358458226747015,
+        "wasted_cost": 1280,
+        "service": "Kafka",
+        "resource": "cluster-node-94",
+        "owner": "Platform",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-04",
+        "cost_original": 8467,
+        "cost_optimized": 7196,
+        "anomaly_score": 0.14324310990619726,
+        "wasted_cost": 1271,
+        "service": "Kafka",
+        "resource": "cluster-node-30",
+        "owner": "Core",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-05",
+        "cost_original": 8664,
+        "cost_optimized": 7364,
+        "anomaly_score": 0.30492307458212514,
+        "wasted_cost": 1300,
+        "service": "Kafka",
+        "resource": "cluster-node-27",
+        "owner": "Platform",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-06",
+        "cost_original": 8233,
+        "cost_optimized": 6998,
+        "anomaly_score": 0.270218629001421,
+        "wasted_cost": 1235,
+        "service": "S3",
+        "resource": "cluster-node-91",
+        "owner": "Core",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-07",
+        "cost_original": 8088,
+        "cost_optimized": 6874,
+        "anomaly_score": 0.30094482893814434,
+        "wasted_cost": 1214,
+        "service": "S3",
+        "resource": "cluster-node-61",
+        "owner": "Data",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-08",
+        "cost_original": 8442,
+        "cost_optimized": 7175,
+        "anomaly_score": 0.35198820862399727,
+        "wasted_cost": 1267,
+        "service": "EC2",
+        "resource": "cluster-node-74",
+        "owner": "Platform",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-09",
+        "cost_original": 8338,
+        "cost_optimized": 7087,
+        "anomaly_score": 0.24503770033222746,
+        "wasted_cost": 1251,
+        "service": "Kafka",
+        "resource": "cluster-node-33",
+        "owner": "Core",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-10",
+        "cost_original": 16801,
+        "cost_optimized": 7055,
+        "anomaly_score": 0.89,
+        "wasted_cost": 9746,
+        "service": "RDS",
+        "resource": "prod-analytics-db",
+        "owner": "Data",
+        "reason": "IOPS provisioned way beyond actual usage requirement"
+      },
+      {
+        "date": "2026-03-11",
+        "cost_original": 8742,
+        "cost_optimized": 7430,
+        "anomaly_score": 0.35515080971036417,
+        "wasted_cost": 1312,
+        "service": "Kafka",
+        "resource": "cluster-node-86",
+        "owner": "Core",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-12",
+        "cost_original": 8470,
+        "cost_optimized": 7199,
+        "anomaly_score": 0.20065421696073193,
+        "wasted_cost": 1271,
+        "service": "S3",
+        "resource": "cluster-node-25",
+        "owner": "Security",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-13",
+        "cost_original": 8828,
+        "cost_optimized": 7503,
+        "anomaly_score": 0.18263213703825643,
+        "wasted_cost": 1325,
+        "service": "ElastiCache",
+        "resource": "cluster-node-61",
+        "owner": "Security",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-14",
+        "cost_original": 8104,
+        "cost_optimized": 6888,
+        "anomaly_score": 0.15611352269670117,
+        "wasted_cost": 1216,
+        "service": "S3",
+        "resource": "cluster-node-78",
+        "owner": "Data",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-15",
+        "cost_original": 8305,
+        "cost_optimized": 7059,
+        "anomaly_score": 0.23894654780354388,
+        "wasted_cost": 1246,
+        "service": "RDS",
+        "resource": "cluster-node-81",
+        "owner": "Platform",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-16",
+        "cost_original": 8519,
+        "cost_optimized": 7241,
+        "anomaly_score": 0.31174446272086415,
+        "wasted_cost": 1278,
+        "service": "ElastiCache",
+        "resource": "cluster-node-66",
+        "owner": "Data",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-17",
+        "cost_original": 19825,
+        "cost_optimized": 7331,
+        "anomaly_score": 0.94,
+        "wasted_cost": 12494,
+        "service": "EC2",
+        "resource": "spark-worker-fleet",
+        "owner": "DataEngineering",
+        "reason": "on-demand instances used instead of spot for massive batch job"
+      },
+      {
+        "date": "2026-03-18",
+        "cost_original": 8606,
+        "cost_optimized": 7315,
+        "anomaly_score": 0.35287884837720096,
+        "wasted_cost": 1291,
+        "service": "S3",
+        "resource": "cluster-node-38",
+        "owner": "Security",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-19",
+        "cost_original": 8967,
+        "cost_optimized": 7621,
+        "anomaly_score": 0.35193707922990647,
+        "wasted_cost": 1346,
+        "service": "S3",
+        "resource": "cluster-node-67",
+        "owner": "Platform",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-20",
+        "cost_original": 8069,
+        "cost_optimized": 6858,
+        "anomaly_score": 0.1524189567407253,
+        "wasted_cost": 1211,
+        "service": "Kafka",
+        "resource": "cluster-node-22",
+        "owner": "Platform",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-21",
+        "cost_original": 8756,
+        "cost_optimized": 7442,
+        "anomaly_score": 0.2645263188136766,
+        "wasted_cost": 1314,
+        "service": "EKS",
+        "resource": "cluster-node-34",
+        "owner": "Platform",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-22",
+        "cost_original": 8472,
+        "cost_optimized": 7201,
+        "anomaly_score": 0.3983998779414739,
+        "wasted_cost": 1271,
+        "service": "EC2",
+        "resource": "cluster-node-75",
+        "owner": "Core",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-23",
+        "cost_original": 23342,
+        "cost_optimized": 7515,
+        "anomaly_score": 0.98,
+        "wasted_cost": 15827,
+        "service": "SageMaker",
+        "resource": "train-job-x99-xlarge",
+        "owner": "DataScience",
+        "reason": "runaway hyperparameter tuning job left running over the weekend"
+      },
+      {
+        "date": "2026-03-24",
+        "cost_original": 8674,
+        "cost_optimized": 7372,
+        "anomaly_score": 0.2662634301106288,
+        "wasted_cost": 1302,
+        "service": "S3",
+        "resource": "cluster-node-19",
+        "owner": "Core",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-25",
+        "cost_original": 8567,
+        "cost_optimized": 7281,
+        "anomaly_score": 0.35973258353721105,
+        "wasted_cost": 1286,
+        "service": "S3",
+        "resource": "cluster-node-44",
+        "owner": "Core",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-26",
+        "cost_original": 8264,
+        "cost_optimized": 7024,
+        "anomaly_score": 0.2097613158191921,
+        "wasted_cost": 1240,
+        "service": "ElastiCache",
+        "resource": "cluster-node-91",
+        "owner": "Data",
+        "reason": "general resource bloat"
+      },
+      {
+        "date": "2026-03-27",
+        "cost_original": 8740,
+        "cost_optimized": 7429,
+        "anomaly_score": 0.33335538013766164,
+        "wasted_cost": 1311,
+        "service": "EKS",
+        "resource": "cluster-node-34",
+        "owner": "Platform",
+        "reason": "general resource bloat"
+      }
     ],
     "incidents": [
-      { "service": "EC2", "resource": "dev-p3-training", "owner": "ML", "anomaly_score": 0.93, "cost_original": 6120, "cost_optimized": 2780, "reason": "a P3 instance was left running all weekend" },
-      { "service": "RDS", "resource": "prod-db-reader", "owner": "Data", "anomaly_score": 0.82, "cost_original": 3410, "cost_optimized": 2825, "reason": "reader replica underutilized" }
+      {
+        "service": "RDS",
+        "resource": "prod-analytics-db",
+        "owner": "Data",
+        "anomaly_score": 0.89,
+        "cost_original": 16801,
+        "cost_optimized": 7055,
+        "reason": "IOPS provisioned way beyond actual usage requirement"
+      },
+      {
+        "service": "EC2",
+        "resource": "spark-worker-fleet",
+        "owner": "DataEngineering",
+        "anomaly_score": 0.94,
+        "cost_original": 19825,
+        "cost_optimized": 7331,
+        "reason": "on-demand instances used instead of spot for massive batch job"
+      },
+      {
+        "service": "SageMaker",
+        "resource": "train-job-x99-xlarge",
+        "owner": "DataScience",
+        "anomaly_score": 0.98,
+        "cost_original": 23342,
+        "cost_optimized": 7515,
+        "reason": "runaway hyperparameter tuning job left running over the weekend"
+      }
     ]
   }
 }
