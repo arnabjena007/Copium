@@ -12,6 +12,7 @@ interface Action {
   success: boolean;
   message: string;
   insight?: string;
+  origin?: "slack" | "system";
 }
 
 interface AuditFeedProps {
@@ -22,7 +23,6 @@ export function AuditFeed({ actions }: AuditFeedProps) {
   const { openInSlack } = useSlackDeepLink();
 
   const handleSlackRedirect = (resourceId: string) => {
-    // These would typically be environment variables or part of the API response
     const TEAM_ID = "T0AQ7027QSC"; 
     const CHANNEL_ID = "C0AP6AEQN3D";
     openInSlack(TEAM_ID, CHANNEL_ID);
@@ -36,6 +36,13 @@ export function AuditFeed({ actions }: AuditFeedProps) {
           <span className="bg-teal-50 text-brand-teal text-[10px] font-bold px-2 py-1 rounded-md border border-brand-teal/10 uppercase tracking-widest">
             Explainable AI: Mistral 7B
           </span>
+          <div className="flex items-center gap-1.5 bg-indigo-50 text-indigo-600 text-[10px] font-bold px-2 py-1 rounded-md border border-indigo-100 uppercase tracking-widest">
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-indigo-500"></span>
+            </span>
+            Slack Sync: Live
+          </div>
         </div>
         <div className="flex items-center gap-2 text-slate-400 text-sm font-medium">
           <Clock size={16} /> 30s Polling Active
@@ -57,9 +64,9 @@ export function AuditFeed({ actions }: AuditFeedProps) {
             {actions.map((action, idx) => (
               <motion.tr
                 key={`${action.resource_id}-${idx}`}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: idx * 0.05 }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
                 className="group hover:bg-slate-50 transition-colors"
               >
                 <td className="px-8 py-5">
@@ -71,9 +78,16 @@ export function AuditFeed({ actions }: AuditFeedProps) {
                   </div>
                 </td>
                 <td className="px-8 py-5">
-                  <span className="bg-teal-50 text-brand-teal border border-brand-teal/10 px-3 py-1.5 rounded-lg text-xs font-bold tracking-wide">
-                    {action.action}
-                  </span>
+                  <div className="flex flex-col gap-1.5">
+                    <span className="w-fit bg-teal-50 text-brand-teal border border-brand-teal/10 px-3 py-1.5 rounded-lg text-xs font-bold tracking-wide">
+                      {action.action}
+                    </span>
+                    {action.origin === "slack" && (
+                      <div className="flex items-center gap-1 text-[9px] font-bold text-indigo-500 uppercase tracking-tighter">
+                        <MessageSquare size={10} /> Via Slack Approval
+                      </div>
+                    )}
+                  </div>
                 </td>
                 <td className="px-8 py-5">
                   <code className="text-brand-teal text-sm font-mono bg-slate-50 px-2 py-1 rounded border border-slate-100 opacity-90 group-hover:opacity-100 transition-opacity">

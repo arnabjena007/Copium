@@ -24,9 +24,13 @@ export default function DashboardPage() {
   const fetchData = async () => {
     try {
       // Use absolute URL for local development (8000) and relative for production
-      const apiUrl = process.env.NODE_ENV === 'production' 
+      const baseApiUrl = process.env.NODE_ENV === 'production' 
         ? "/api/dashboard" 
         : "http://localhost:8000/api/dashboard";
+        
+      // Add cache buster to ensure the browser doesn't cache the response
+      const apiUrl = `${baseApiUrl}?t=${Date.now()}`;
+      console.log(`[Dashboard] Fetching data from: ${apiUrl}`);
         
       const response = await fetch(apiUrl);
       if (!response.ok) throw new Error("Failed to fetch dashboard metrics");
