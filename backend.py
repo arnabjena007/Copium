@@ -4,6 +4,8 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
+import requests
+from typing import Any, Dict
 
 app = FastAPI()
 
@@ -28,6 +30,8 @@ def get_latest_metrics():
 
 @app.get("/api/dashboard")
 def get_dashboard_data():
+    # Pre-calculated high-quality Mistral insights for the demo
+    # In production, these would be generated dynamically and cached
     return {
         "total_remediations_attempted": 25,
         "total_remediations_successful": 24,
@@ -39,7 +43,8 @@ def get_dashboard_data():
                 "resource_id": "i-0abcd1234efgh5678",
                 "mode": "LIVE",
                 "success": true,
-                "message": "Stop requested successfully."
+                "message": "Stop requested successfully.",
+                "insight": "Mistral AI detected zero CPU utilization over 72h. Terminating this idle instance saved $450/mo with no impact on production workloads."
             },
             {
                 "timestamp": "2026-03-28T10:45:00Z",
@@ -47,7 +52,8 @@ def get_dashboard_data():
                 "resource_id": "vol-0987654321fedcba",
                 "mode": "LIVE",
                 "success": true,
-                "message": "Volume deleted."
+                "message": "Volume deleted.",
+                "insight": "Unattached volume found in us-east-1. Deletion prevents 'zombie' costs that account for 12% of your monthly storage waste."
             },
             {
                 "timestamp": "2026-03-28T10:30:15Z",
@@ -55,7 +61,8 @@ def get_dashboard_data():
                 "resource_id": "db-prod-instance",
                 "mode": "DRY_RUN",
                 "success": false,
-                "message": "Dry-run check: No changes made."
+                "message": "Dry-run check: No changes made.",
+                "insight": "RDS instance is over-provisioned by 4x. Recommend downgrading from db.r5.2xlarge to db.m5.large for a $800/mo cost reduction."
             }
         ]
     }

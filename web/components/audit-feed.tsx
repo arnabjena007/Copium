@@ -11,6 +11,7 @@ interface Action {
   mode: string;
   success: boolean;
   message: string;
+  insight?: string;
 }
 
 interface AuditFeedProps {
@@ -30,7 +31,12 @@ export function AuditFeed({ actions }: AuditFeedProps) {
   return (
     <div className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
       <div className="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-        <h3 className="text-xl font-bold text-brand-slate tracking-tight">Audit Trail & Action Feed</h3>
+        <div className="flex items-center gap-3">
+          <h3 className="text-xl font-bold text-brand-slate tracking-tight">Audit Trail & Action Feed</h3>
+          <span className="bg-teal-50 text-brand-teal text-[10px] font-bold px-2 py-1 rounded-md border border-brand-teal/10 uppercase tracking-widest">
+            Explainable AI: Mistral 7B
+          </span>
+        </div>
         <div className="flex items-center gap-2 text-slate-400 text-sm font-medium">
           <Clock size={16} /> 30s Polling Active
         </div>
@@ -85,9 +91,18 @@ export function AuditFeed({ actions }: AuditFeedProps) {
                       {action.success ? "Success" : "Failed / Pending"}
                     </span>
                   </div>
-                  <div className="text-[11px] text-slate-400 truncate max-w-[180px] mt-1 italic">
-                    {action.message}
-                  </div>
+                  {action.insight ? (
+                    <div className="mt-2 text-xs bg-slate-50 border border-slate-100 p-2.5 rounded-xl text-slate-600 leading-relaxed relative group">
+                      <div className="flex items-center gap-1.5 text-brand-teal font-bold text-[10px] uppercase mb-1 tracking-wider">
+                        <span className="animate-pulse">✨</span> AI Insight
+                      </div>
+                      {action.insight}
+                    </div>
+                  ) : (
+                    <div className="text-[11px] text-slate-400 truncate max-w-[180px] mt-1 italic">
+                      {action.message}
+                    </div>
+                  )}
                 </td>
                 <td className="px-8 py-5 text-right">
                   <button
