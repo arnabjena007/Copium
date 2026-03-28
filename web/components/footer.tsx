@@ -127,7 +127,7 @@ export function Footer() {
       <div className="max-w-6xl mx-auto px-6 md:px-10 py-6 flex flex-col md:flex-row items-center justify-between gap-3">
         <p className="text-slate-400 text-sm text-center md:text-left">
           © {new Date().getFullYear()}{" "}
-          <span className="font-semibold text-brand-slate">CloudCFO, Inc.</span>{" "}
+          <span className="font-semibold text-brand-slate">Anomaly Engine, Inc.</span>{" "}
           All rights reserved. Built to eliminate cloud waste.
         </p>
         <div className="flex items-center gap-6">
