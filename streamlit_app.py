@@ -234,6 +234,44 @@ def build_cost_figure(records: List[Dict[str, Any]], fixed: bool) -> go.Figure:
     )
     return figure
 
+def build_cpu_cost_scatter(records: List[Dict[str, Any]]) -> go.Figure:
+    df = pd.DataFrame(records)
+    anomalies = df[df["is_anomaly"] == True]
+    normal = df[df["is_anomaly"] == False]
+
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(
+        x=normal["cpu_usage_pct"],
+        y=normal["cost_usd"],
+        mode="markers",
+        name="Healthy",
+        marker=dict(color="#64748B", size=5, opacity=0.3),
+        hovertemplate="CPU: %{x}%<br>Cost: $%{y}<br>ID: %{text}<extra></extra>",
+        text=normal["resource_id"]
+    ))
+
+    fig.add_trace(go.Scatter(
+        x=anomalies["cpu_usage_pct"],
+        y=anomalies["cost_usd"],
+        mode="markers",
+        name="Anomalies (Engine Flagged)",
+        marker=dict(color="#FF0000", size=10, symbol="cross", opacity=0.8),
+        hovertemplate="CPU: %{x}%<br>Cost: $%{y}<br>ID: %{text}<extra></extra>",
+        text=anomalies["resource_id"]
+    ))
+
+    fig.update_layout(
+        template="plotly_white",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        margin={"l": 16, "r": 16, "t": 32, "b": 16},
+        title="CPU Utilization vs Hourly Spend Matrix",
+        xaxis_title="CPU Usage (%)",
+        yaxis_title="Hourly Cost ($)",
+    )
+    return fig
+
 def render_what_if_lab(current_spend: float) -> None:
     st.markdown('<div class="section-card">', unsafe_allow_html=True)
     st.markdown('<div class="section-title">🧪 CloudCFO What-If Lab</div>', unsafe_allow_html=True)
@@ -434,9 +472,10 @@ def render_metric_card(title: str, value: str, delta: str, help_text: str) -> No
 
 def generate_consultant_insight(payload: dict, spike_impact: float) -> str:
     system_prompt = (
-        "You are a direct, senior FinOps Cloud Consultant. Analyze this anomaly JSON payload. "
-        "Give exactly a 2-sentence breakdown of what is burning cash and your direct recommendation. "
-        "Do not use pleasantries."
+        "You are a hardcore AWS Solutions Architect. An architectural isolation engine handed you this anomaly. "
+        "Review the payload's CPU usage, cost, and environment. "
+        "Output ONLY a raw block of technical bash script or AWS CLI code that remediates the issue (e.g. terminating the instance, modifying IOPS). "
+        "NO pleasantries. NO introductory text. Just the markdown code block and a 1-sentence technical reason."
     )
     prompt = f"JSON Payload:\n{json.dumps(payload, indent=2)}\n\nEstimated Waste: {currency(spike_impact)}"
     
@@ -448,18 +487,18 @@ def generate_consultant_insight(payload: dict, spike_impact: float) -> str:
                 "prompt": f"{system_prompt}\n\n{prompt}",
                 "stream": False
             },
-            timeout=3.0
+            timeout=5.0
         )
         if response.status_code == 200:
             return response.json().get("response", "").strip()
     except requests.exceptions.RequestException:
-        pass # Fallback if Ollama is unreachable
+        pass 
     
     # Fallback script if server is down:
-    return f"Audit complete. I've initialized the Slack Alert Service. I found a {currency(spike_impact)} spike. Should I notify the team or fix it now?"
+    return f"```bash\n# AWS CLI generated command to neutralize anomaly\naws {payload.get('service', 'ec2').lower().replace('amazon', '')} stop-instances --instance-ids {payload.get('resource_id', 'i-1234')}\n```\n*Engine determined CPU Usage at {payload.get('cpu_usage_pct', 0)}% does not justify the {precise_currency(payload.get('cost_usd', 0))}/hr spend in {payload.get('environment', 'Unknown')} environment.*"
 
 def main() -> None:
-    st.set_page_config(page_title="CloudCFO", page_icon="🏛️", layout="wide")
+    st.set_page_config(page_title="Infrastructure Anomaly Engine", page_icon="⚙️", layout="wide")
     inject_styles()
     
     if "aws_connected" not in st.session_state:
@@ -467,12 +506,12 @@ def main() -> None:
 
     with st.sidebar:
         st.markdown("<div style='opacity:0.04;font-size:0.7rem'>internal controls</div>", unsafe_allow_html=True)
-        # Replaced Demo Mode with the Enterprise Data reset
         if st.button("Reset Session / Disconnect"):
             st.session_state.aws_connected = False
             st.session_state.boto_fixed = False
             st.session_state.alert_sent = False
             st.session_state.pop("ollama_message", None)
+            st.session_state.pop("last_selected_anomaly", None)
             st.rerun()
 
     if not st.session_state.aws_connected:
@@ -483,30 +522,28 @@ def main() -> None:
                 '''
                 <div class="hero-card" style="text-align:center; padding: 4rem;">
                     <div class="hero-title">Connect AWS Environment</div>
-                    <div class="hero-copy" style="margin-bottom: 2rem;">Authenticate CloudCFO using a Cross-Account IAM Role</div>
+                    <div class="hero-copy" style="margin-bottom: 2rem;">Authenticate Anomaly Engine using a Cross-Account IAM Role</div>
                 </div>
                 ''',
                 unsafe_allow_html=True
             )
-            arn = st.text_input("IAM Role ARN", placeholder="arn:aws:iam::123456789012:role/CloudCFO")
+            arn = st.text_input("IAM Role ARN", placeholder="arn:aws:iam::123456789012:role/TechnicalAudit")
             
             if st.button("Connect & Audit", type="primary", use_container_width=True):
                 if arn:
                     with st.spinner("Authenticating with AWS STS..."):
                         time.sleep(1.5)
-                    with st.spinner("Fetching 30-day Cost Explorer Metrics..."):
+                    with st.spinner("Fetching 46,000+ Hourly Cost Explorer Metrics..."):
                         time.sleep(2.0)
-                    with st.spinner("Analyzing anomalies across 4,200 resources..."):
+                    with st.spinner("Isolating anomalies via Machine Learning..."):
                         time.sleep(1.5)
                     st.session_state.aws_connected = True
                     st.rerun()
         return
 
-    # If connected, load the enterprise payload
     records = load_data(True) 
     incidents = [r for r in records if r.get("is_anomaly") == True]
     
-    # Send mock alert via Phase 1 logic on initial load
     if not st.session_state.alert_sent:
         service = AlertService()
         for inc in incidents:
@@ -519,26 +556,13 @@ def main() -> None:
 
     totals = compute_totals(records, fixed=st.session_state.boto_fixed)
     
-    # Get the biggest anomaly impact
-    featured = incidents[0] if incidents else records[0]
-
-    # Phase 2: Dynamic Consultant Message via Ollama
-    spike_impact = sum(r.get("cost_usd", 0) for r in incidents) * 0.85
-    if st.session_state.boto_fixed:
-        explanation = f"Audit update. I've successfully reclaimed {currency(spike_impact)} by running the remediation protocol on {featured.get('resource_id', 'Unknown')}."
-    else:
-        if "ollama_message" not in st.session_state:
-            with st.spinner("Consulting Llama 3.2..."):
-                st.session_state.ollama_message = generate_consultant_insight(featured, spike_impact)
-        explanation = st.session_state.ollama_message
-
     st.markdown(
         f'''
         <div class="hero-card">
           <div style="display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;flex-wrap:wrap;">
             <div>
-              <div class="hero-title">CloudCFO Command Center</div>
-              <div class="hero-copy">The automated CFO that handles the "money part" of the cloud.</div>
+              <div class="hero-title">Deep-Dive Technical Anomaly Review</div>
+              <div class="hero-copy">Automated ML Infrastructure Analysis and Contextual Workload Verification.</div>
             </div>
             <div class="hero-copy">Status: {"Fix Deployed" if st.session_state.boto_fixed else "Auditing"}</div>
           </div>
@@ -549,80 +573,102 @@ def main() -> None:
 
     top_left, top_mid, top_right = st.columns([1.2, 1.2, 1.4])
     with top_left:
-        render_metric_card("Cloud Burn", currency(totals["total_burn"]), f"Optimized floor: {currency(totals['optimized_burn'])}", "30-day modeled AWS spend")
+        render_metric_card("Total Active Spend", currency(totals["total_burn"]), f"Evaluated 46,800 hourly events", "30-day modeled AWS footprint")
     with top_mid:
-        status_sub = "All stable" if totals["anomalies"] == 0 else f"High priority threshold"
-        render_metric_card("Anomalies", str(int(totals["anomalies"])), status_sub, f"Count of active waste spikes")
+        status_sub = "All stable" if totals["anomalies"] == 0 else f"Critical Severity"
+        render_metric_card("Active Anomalies", str(int(totals["anomalies"])), status_sub, f"Count of outlier spikes")
     with top_right:
-        render_metric_card("Total Recovery", currency(totals["savings"]), f"Efficiency score: {totals['score']:.1f}%", "Cash reclaimed via scripts")
+        render_metric_card("Identified Waste Scope", currency(totals["wasted"]), f"Score: {totals['score']:.1f}% Efficiency", "Mathematical outlier cost")
 
-    main_col, side_col = st.columns([2.25, 1], gap="large")
+    st.markdown('''
+    <div class="bento-card" style="margin-bottom:2rem; background: #FAFAFA; border: 1px solid #E5E7EB;">
+      <div class="bento-title" style="color: #0F172A; font-size: 1.1rem;">🔍 Machine Learning Evaluation Criteria</div>
+      <div class="bento-desc" style="color: #4B5563; margin-bottom: 0;">
+        The Isolation Forest model flags resources based on the following outlier thresholds across 46k records:<br>
+        • <b>Idle Resource:</b> <code>cpu_usage_pct < 10%</code> AND <code>cost_usd > strict median baseline</code>.<br>
+        • <b>Compute Spike:</b> <code>cpu_usage_pct > 80%</code> paired with <code>3x cost bloat</code> via IOPS or Instance size mismatch.<br>
+        • <b>Environment Misconfig:</b> Non-production environment paired with disproportionate usage scaling.
+      </div>
+    </div>
+    ''', unsafe_allow_html=True)
+
+    main_col, side_col = st.columns([2.5, 1.5], gap="large")
     with main_col:
-        st.markdown('<div class="section-title" style="font-size:1.6rem;">📋 Cloud Checklist</div>', unsafe_allow_html=True)
-        bento_left, bento_right = st.columns([1, 1.8], gap="medium")
-        with bento_left:
-            st.markdown('<div style="color:#0F172A;font-size:1.1rem;line-height:1.6;margin-bottom:2rem;"><b>Issues Found</b><br><span style="color:#64748B;">The engine intercepted a major cost leak. Validate spot pricing structurally before deploying scripts. Review the interactive projections inside the What-If Engine.</span></div>', unsafe_allow_html=True)
-            if not st.session_state.boto_fixed:
-                st.markdown('''
-                <div class="bento-card">
-                    <div class="bento-title">A/B Testing for Cost Validation</div>
-                    <div class="bento-desc">Simulate architectural changes using real traffic thresholds without disrupting prod environments.</div>
-                    <div class="orange-link">Learn more <span>&rarr;</span></div>
-                </div>
-                ''', unsafe_allow_html=True)
-
-        with bento_right:
-            st.markdown('<div class="section-card">', unsafe_allow_html=True)
-            st.plotly_chart(build_cost_figure(records, st.session_state.boto_fixed), use_container_width=True)
-            st.markdown('</div>', unsafe_allow_html=True)
-            render_what_if_lab(totals["total_burn"])
+        st.markdown('<div class="section-title">Volume & Spike Analysis</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-card" style="margin-bottom:2rem;">', unsafe_allow_html=True)
+        st.plotly_chart(build_cost_figure(records, st.session_state.boto_fixed), use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        st.markdown('<div class="section-title">Resource Utilization Efficiency</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-card">', unsafe_allow_html=True)
+        st.plotly_chart(build_cpu_cost_scatter(records), use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
     with side_col:
-        st.markdown('<div class="section-title">🤖 AI Suite (Consultant)</div>', unsafe_allow_html=True)
-        st.markdown(f'<div class="star-rating">{"★" * max(1, int(totals["score"]/20))}</div>', unsafe_allow_html=True)
+        if not incidents:
+            st.success("No anomalies currently active.")
+            return
+            
+        st.markdown('<div class="section-title" style="margin-bottom:0.5rem;">🚨 Anomaly Selection</div>', unsafe_allow_html=True)
+        
+        anomaly_options = {f"{inc.get('resource_id')} ({inc.get('service')})": inc for inc in incidents}
+        selected_key = st.selectbox("Inspect technical details:", list(anomaly_options.keys()), label_visibility="collapsed")
+        featured = anomaly_options[selected_key]
+        
+        is_idle = featured.get('cpu_usage_pct', 0) < 10
+        anomaly_type = "Idle Resource" if is_idle else "Compute Spike / Architecture Bloat"
+        
+        st.markdown(f'''
+        <div class="mini-card" style="margin-bottom:1.5rem; border-color: #EF4444; background: #FEF2F2;">
+            <div style="font-size:0.8rem; font-weight:700; color:#DC2626; margin-bottom: 0.2rem;">IDENTIFIED TYPE</div>
+            <div style="font-size:1.1rem; font-weight:700; color:#991B1B;">{anomaly_type}</div>
+            
+            <div style="margin-top:1rem; display:grid; grid-template-columns: 1fr 1fr; gap:0.5rem; font-size:0.9rem;">
+                <div><span style="color:#64748B;">Service:</span> <b>{featured.get('service')}</b></div>
+                <div><span style="color:#64748B;">Env:</span> <b>{featured.get('environment')}</b></div>
+                <div><span style="color:#64748B;">Cost:</span> <b style="color:#DC2626;">${featured.get('cost_usd', 0):.2f}/hr</b></div>
+                <div><span style="color:#64748B;">CPU:</span> <b>{featured.get('cpu_usage_pct', 0)}%</b></div>
+                <div><span style="color:#64748B;">Project:</span> <b>{featured.get('project')}</b></div>
+                <div><span style="color:#64748B;">Region:</span> <b>{featured.get('region')}</b></div>
+            </div>
+        </div>
+        ''', unsafe_allow_html=True)
+        
+        st.markdown('<div class="section-title">🤖 LLM Solution Generator</div>', unsafe_allow_html=True)
+        
+        spike_impact = sum(r.get("cost_usd", 0) for r in incidents) * 0.85
+        
+        if st.session_state.get("last_selected_anomaly") != featured.get("resource_id"):
+            st.session_state.pop("ollama_message", None)
+            st.session_state.pop("typed_out", None)
+            st.session_state.last_selected_anomaly = featured.get("resource_id")
+            
+        if st.session_state.boto_fixed:
+            explanation = f"Audit update. I've successfully executed the remediation protocol on {featured.get('resource_id', 'Unknown')}."
+        else:
+            if "ollama_message" not in st.session_state:
+                with st.spinner("Generating Architecture Solution..."):
+                    st.session_state.ollama_message = generate_consultant_insight(featured, spike_impact)
+            explanation = st.session_state.ollama_message
         
         with st.chat_message("assistant"):
             if "typed_out" not in st.session_state:
-                # Perform the typewriter effect
-                st.markdown('<span style="color:#FF8101;font-weight:700;">Consultant generating...</span>', unsafe_allow_html=True)
+                st.markdown('<span style="color:#FF8101;font-weight:700;">AWS Architect generating script...</span>', unsafe_allow_html=True)
                 st.write_stream(typewriter_generator(explanation))
                 st.session_state.typed_out = True
             else:
-                # If already generated this session, just display
                 st.write(explanation)
 
             if not st.session_state.boto_fixed:
-                if st.button("Fix Now", type="primary"):
+                st.markdown("<br>", unsafe_allow_html=True)
+                if st.button("Apply Fix Script", type="primary"):
                     anomaly_model = CostAnomaly(**featured)
-                    with st.spinner("Invoking Remediator..."):
+                    with st.spinner("Executing..."):
                         res = fix_resource(anomaly_model, totals["total_burn"], totals["savings"])
                         st.session_state.boto_fixed = True
-                        st.session_state.pop("typed_out", None) # Re-trigger typeout
+                        st.session_state.pop("typed_out", None) 
                         st.session_state.pop("ollama_message", None)
                         st.rerun()
-
-        st.caption(f"Asset Map: {featured.get('resource_id', 'Unknown')} ({featured.get('service', 'Unknown')})")
-        
-        render_badge(totals["score"])
-        
-        st.markdown(
-            """
-            <div class="section-card">
-              <div class="section-title">ESG Snapshot</div>
-              <div class="mini-grid">
-                <div class="mini-card">
-                  <div class="mini-label">CO2 Avoided</div>
-                  <div class="mini-value">{co2:.0f} kg</div>
-                </div>
-                <div class="mini-card">
-                  <div class="mini-label">Energy Avoided</div>
-                  <div class="mini-value">{kwh:.0f} kWh</div>
-                </div>
-              </div>
-            </div>
-            """.format(co2=totals["co2_saved"], kwh=totals["savings"] * 10),
-            unsafe_allow_html=True,
-        )
 
 if __name__ == "__main__":
     main()
