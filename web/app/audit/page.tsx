@@ -9,7 +9,7 @@ export default function AuditPage() {
   useEffect(() => {
     if (complete) {
       setTimeout(() => {
-        window.location.href = "https://copium-hizs9rmhxfvw8fqkt7rjk2.streamlit.app";
+        window.location.href = "https://kpi5dashboard.streamlit.app/";
       }, 500);
     }
   }, [complete]);
