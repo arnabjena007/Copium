@@ -32,6 +32,7 @@ export function FloatingNavbar() {
           <span className="text-xl font-bold tracking-tight text-brand-slate">CloudCFO</span>
         </div>
         <div className="hidden md:flex items-center gap-8 font-medium text-slate-600">
+          <a href="/dashboard" className="text-brand-teal font-bold hover:text-brand-teal-light transition-colors">Dashboard</a>
           <a href="#features" className="hover:text-brand-teal transition-colors">Features</a>
           <a href="#testimonials" className="hover:text-brand-teal transition-colors">Testimonials</a>
           <a href="#faq" className="hover:text-brand-teal transition-colors">FAQ</a>
