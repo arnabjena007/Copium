@@ -15,10 +15,12 @@ import {
 const data = [
   { time: "00:00", cost: 120, baseline: 110, isAnomaly: false },
   { time: "04:00", cost: 135, baseline: 112, isAnomaly: false },
+  { time: "06:00", cost: 380, baseline: 114, isAnomaly: true, detail: "Unscheduled Data Pipeline Spike" },
   { time: "08:00", cost: 140, baseline: 115, isAnomaly: false },
   { time: "12:00", cost: 490, baseline: 120, isAnomaly: true, detail: "Idle RDS Instance Left Running" },
   { time: "16:00", cost: 155, baseline: 118, isAnomaly: false },
-  { time: "20:00", cost: 145, baseline: 115, isAnomaly: false },
+  { time: "19:00", cost: 420, baseline: 116, isAnomaly: true, detail: "NAT Gateway Outbound Burst" },
+  { time: "22:00", cost: 145, baseline: 115, isAnomaly: false },
   { time: "23:59", cost: 130, baseline: 110, isAnomaly: false },
 ];
 

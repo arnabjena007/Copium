@@ -53,19 +53,23 @@ export async function GET() {
 
   // Add dynamic events based on elapsed time (same logic as the Python API)
   if (extraEventsCount > 0) {
-    const actionChoices = ["STOP_EC2", "TERMINATE_IDLE", "CLEAN_SNAPSHOTS"];
+    const actionChoices = ["STOP_EC2", "TERMINATE_IDLE", "CLEAN_SNAPSHOTS", "ANOMALY_DETECTED", "AUTO_SCALE_DOWN"];
     for (let i = 1; i <= extraEventsCount; i++) {
-      const eventTime = new Date(now.getTime() - i * 120000).toISOString().replace(/\.\d+Z$/, "Z");
+      const eventTime = new Date(now.getTime() - i * 90000).toISOString().replace(/\.\d+Z$/, "Z");
       const randId = Math.floor(Math.random() * 9000) + 1000;
-      const randSaving = Math.floor(Math.random() * 131) + 20;
+      const randSaving = Math.floor(Math.random() * 350) + 50;
+      const isSerious = randSaving > 200;
+      
       actions.unshift({
         timestamp: eventTime,
-        action: actionChoices[Math.floor(Math.random() * actionChoices.length)],
-        resource_id: `res-${randId}-dynamic`,
-        mode: "LIVE",
-        success: true,
-        message: "Automated remediation triggered via Slack approval.",
-        insight: `Live Update: This cost-saving action was approved by an administrator in #finops-alerts via the Mistral AI bot. Estimated impact: $${randSaving}/mo.`,
+        action: isSerious ? "CRITICAL_ANOMALY" : actionChoices[Math.floor(Math.random() * actionChoices.length)],
+        resource_id: `res-${randId}-${isSerious ? 'spike' : 'leak'}`,
+        mode: isSerious ? "DRY_RUN" : "LIVE",
+        success: !isSerious,
+        message: isSerious ? "Urgent: Unusual cost spike detected." : "Automated remediation triggered via Slack approval.",
+        insight: isSerious 
+          ? `Anomaly Alert: Unusual ${randId % 2 === 0 ? 'S3 Transfer' : 'EBS IOPS'} activity detected ($${randSaving}/mo projected). Operator review required via Slack.` 
+          : `Live Update: This cost-saving action was approved by an administrator in #finops-alerts. Estimated impact: $${randSaving}/mo.`,
         origin: "slack",
       });
     }
