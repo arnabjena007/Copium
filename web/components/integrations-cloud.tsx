@@ -50,7 +50,7 @@ export function IntegrationsCloud() {
             transition={{ duration: 0.9, ease: "easeOut" }}
           >
             Connect your entire{" "}
-            <span className="text-brand-orange">AWS stack</span>
+            <span className="text-brand-teal">AWS stack</span>
           </motion.h2>
           <motion.p
             className="text-slate-400 text-lg md:text-xl max-w-md mx-auto mb-8"
@@ -62,7 +62,7 @@ export function IntegrationsCloud() {
             One ARN. Every service. Zero blind spots.
           </motion.p>
           <motion.button
-            className="bg-brand-orange text-white font-bold px-8 py-3.5 rounded-full text-lg shadow-[0_4px_24px_rgba(255,129,1,0.35)] hover:shadow-[0_8px_32px_rgba(255,129,1,0.45)] hover:-translate-y-0.5 transition-all duration-200"
+            className="bg-brand-teal text-white font-bold px-8 py-3.5 rounded-full text-lg shadow-[0_4px_24px_rgba(13,148,136,0.35)] hover:shadow-[0_8px_32px_rgba(13,148,136,0.45)] hover:-translate-y-0.5 transition-all duration-200"
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}

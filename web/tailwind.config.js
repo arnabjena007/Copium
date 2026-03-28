@@ -9,7 +9,9 @@ module.exports = {
     extend: {
       colors: {
         brand: {
-          orange: "#FF8101",
+          teal: "#0D9488",
+          "teal-light": "#14B8A6",
+          "teal-dark": "#0F766E",
           slate: "#0F172A",
           gray: "#F8FAFC",
         },

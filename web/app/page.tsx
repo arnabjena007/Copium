@@ -24,13 +24,21 @@ export default function Page() {
   ];
 
   return (
-    <div className="min-h-screen w-full bg-white relative overflow-x-hidden font-sans">
-      {/* Amber Glow Background */}
+    <div className="min-h-screen w-full relative bg-white overflow-x-hidden font-sans">
+      {/* Teal Glow Background — top-left radial */}
       <div
-        className="fixed inset-0 z-0"
+        className="absolute inset-0 z-0"
         style={{
-          backgroundImage: "radial-gradient(125% 125% at 50% 10%, #ffffff 40%, #f59e0b 100%)",
-          backgroundSize: "100% 100%",
+          background: "#ffffff",
+          backgroundImage: `
+            radial-gradient(
+              circle at top left,
+              rgba(56, 193, 182, 0.5),
+              transparent 70%
+            )
+          `,
+          filter: "blur(80px)",
+          backgroundRepeat: "no-repeat",
         }}
       />
 
@@ -46,7 +54,7 @@ export default function Page() {
             transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
           >
             <h1 className="text-4xl md:text-7xl font-extrabold tracking-tight mb-8 leading-tight text-brand-slate drop-shadow-sm">
-              Find and fix <span className="text-brand-orange">cloud cost leaks</span> in seconds
+              Find and fix <span className="text-brand-teal">cloud cost leaks</span> in seconds
             </h1>
           </motion.div>
 
@@ -56,7 +64,7 @@ export default function Page() {
             transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
             className={`text-2xl md:text-3xl text-slate-500 mb-12 max-w-3xl mx-auto leading-relaxed ${instrumentSerif.className}`}
           >
-            A focused audit experience that reveals what matters and removes what doesn’t.
+            A focused audit experience that reveals what matters and removes what doesn't.
           </motion.p>
 
           <motion.div
@@ -85,7 +93,7 @@ export default function Page() {
             <button className="flex items-center gap-2 hover:text-brand-slate transition-colors bg-white/70 backdrop-blur-md px-5 py-2.5 border border-slate-200 rounded-xl shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:-translate-y-1 duration-300"><Activity size={18} /> Compare</button>
             <button className="flex items-center gap-2 hover:text-brand-slate transition-colors bg-white/70 backdrop-blur-md px-5 py-2.5 border border-slate-200 rounded-xl shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:-translate-y-1 duration-300"><BookOpen size={18} /> Schema</button>
             <button className="flex items-center gap-2 hover:text-brand-slate transition-colors bg-white/70 backdrop-blur-md px-5 py-2.5 border border-slate-200 rounded-xl shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:-translate-y-1 duration-300"><Bot size={18} /> AI SuitePRO</button>
-            <button className="flex items-center gap-2 text-brand-orange bg-orange-50 px-5 py-2.5 rounded-xl transition-transform hover:-translate-y-1 duration-300 font-bold">+12 more &rarr;</button>
+            <button className="flex items-center gap-2 text-brand-teal bg-teal-50 px-5 py-2.5 rounded-xl transition-transform hover:-translate-y-1 duration-300 font-bold">+12 more &rarr;</button>
           </motion.div>
         </section>
 
@@ -98,12 +106,12 @@ export default function Page() {
             {/* Context Layer */}
             <div className="md:w-1/2 p-10 md:p-14 z-10 relative">
               <h2 className="text-3xl md:text-[2.8rem] font-extrabold text-white mb-5 leading-[1.15] tracking-tight">
-                Engineered to catch <br className="hidden md:block" /> <span className="text-brand-orange">mass traffic bursts</span>
+                Engineered to catch <br className="hidden md:block" /> <span className="text-brand-teal-light">mass traffic bursts</span>
               </h2>
               <p className="text-slate-400 text-lg md:text-xl font-medium mb-8 leading-relaxed max-w-md">
                 Keep your financial pipelines running smoothly while our engines intercept idle resources and viral-load spikes before they map to your billing cycle.
               </p>
-              <button className="text-brand-orange font-bold flex items-center gap-2 hover:gap-3 transition-all text-lg tracking-wide hover:text-orange-400">
+              <button className="text-brand-teal-light font-bold flex items-center gap-2 hover:gap-3 transition-all text-lg tracking-wide hover:text-teal-300">
                 Interceptor Docs &rarr;
               </button>
             </div>
