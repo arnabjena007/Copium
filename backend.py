@@ -42,7 +42,7 @@ def get_dashboard_data():
                 "action": "STOP_EC2",
                 "resource_id": "i-0abcd1234efgh5678",
                 "mode": "LIVE",
-                "success": true,
+                "success": True,
                 "message": "Stop requested successfully.",
                 "insight": "Mistral AI detected zero CPU utilization over 72h. Terminating this idle instance saved $450/mo with no impact on production workloads."
             },
@@ -51,7 +51,7 @@ def get_dashboard_data():
                 "action": "DELETE_EBS",
                 "resource_id": "vol-0987654321fedcba",
                 "mode": "LIVE",
-                "success": true,
+                "success": True,
                 "message": "Volume deleted.",
                 "insight": "Unattached volume found in us-east-1. Deletion prevents 'zombie' costs that account for 12% of your monthly storage waste."
             },
@@ -60,7 +60,7 @@ def get_dashboard_data():
                 "action": "RIGHTSIZE_RDS",
                 "resource_id": "db-prod-instance",
                 "mode": "DRY_RUN",
-                "success": false,
+                "success": False,
                 "message": "Dry-run check: No changes made.",
                 "insight": "RDS instance is over-provisioned by 4x. Recommend downgrading from db.r5.2xlarge to db.m5.large for a $800/mo cost reduction."
             }
@@ -73,4 +73,5 @@ def health():
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
-    uvicorn.run(app, host="0.0.0.0", port=port)
+    # Use reload=True for faster development (note: reload requires uvicorn[standard])
+    uvicorn.run("backend:app", host="127.0.0.1", port=port, reload=True)
