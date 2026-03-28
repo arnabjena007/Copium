@@ -81,13 +81,7 @@ export default function Page() {
             transition={{ duration: 0.6, delay: 0.5, ease: "easeOut" }}
             className="flex flex-wrap justify-center gap-4 text-slate-600 font-medium"
           >
-            <button
-              onClick={() => window.location.href = "https://kpi5dashboard.streamlit.app/"}
-              className="flex items-center gap-2 text-brand-orange bg-orange-50 px-6 py-3 border-2 border-brand-orange/20 rounded-xl shadow-lg hover:shadow-orange-200/50 hover:-translate-y-1 duration-300 font-bold scale-105"
-            >
-              <Zap size={20} className="fill-brand-orange" /> Sync to Audit
-            </button>
-            <button className="flex items-center gap-2 hover:text-brand-slate transition-colors bg-white/70 backdrop-blur-md px-5 py-2.5 border border-slate-200 rounded-xl shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:-translate-y-1 duration-300"><Box size={18} /> Bulk Scan</button>
+            <button className="flex items-center gap-2 hover:text-brand-slate transition-colors bg-white/70 backdrop-blur-md px-5 py-2.5 border border-slate-200 rounded-xl shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:-translate-y-1 duration-300"><Box size={18}/> Bulk Scan</button>
             <button className="flex items-center gap-2 hover:text-brand-slate transition-colors bg-white/70 backdrop-blur-md px-5 py-2.5 border border-slate-200 rounded-xl shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:-translate-y-1 duration-300"><Activity size={18} /> Compare</button>
             <button className="flex items-center gap-2 hover:text-brand-slate transition-colors bg-white/70 backdrop-blur-md px-5 py-2.5 border border-slate-200 rounded-xl shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:-translate-y-1 duration-300"><BookOpen size={18} /> Schema</button>
             <button className="flex items-center gap-2 hover:text-brand-slate transition-colors bg-white/70 backdrop-blur-md px-5 py-2.5 border border-slate-200 rounded-xl shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:-translate-y-1 duration-300"><Bot size={18} /> AI SuitePRO</button>
