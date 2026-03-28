@@ -40,7 +40,7 @@ export function FaqAccordion() {
               <motion.div
                 animate={{ rotate: openIndex === idx ? 180 : 0 }}
                 transition={{ duration: 0.3 }}
-                className="text-brand-orange"
+                className="text-brand-teal"
               >
                 <ChevronDown size={24} />
               </motion.div>

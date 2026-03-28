@@ -15,7 +15,7 @@ export function DashboardPreview() {
         <div className="bg-slate-50 border border-slate-200 rounded-2xl overflow-hidden shadow-inner">
           {/* Mock Header Tabs */}
           <div className="border-b border-slate-200 bg-white px-6 py-4 flex gap-8">
-            <div className="text-brand-orange font-bold border-b-2 border-brand-orange pb-4 -mb-4 px-2">Results</div>
+            <div className="text-brand-teal font-bold border-b-2 border-brand-teal pb-4 -mb-4 px-2">Results</div>
             <div className="text-slate-500 font-medium pb-4 -mb-4 px-2 cursor-pointer hover:text-slate-700 hover:border-b-2 hover:border-slate-300 transition-all">Cost Center</div>
             <div className="text-slate-500 font-medium pb-4 -mb-4 px-2 cursor-pointer hover:text-slate-700 hover:border-b-2 hover:border-slate-300 transition-all">Resources</div>
           </div>
@@ -33,7 +33,7 @@ export function DashboardPreview() {
               {[1, 2, 3].map((row) => (
                 <div key={row} className="grid grid-cols-4 gap-4 py-5 border-b border-slate-100 items-center">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-orange-100 flex-shrink-0" />
+                    <div className="w-8 h-8 rounded-lg bg-teal-100 flex-shrink-0" />
                     <div>
                       <div className="font-bold text-brand-slate text-sm">i-0a1b2c3d4e5f{row}</div>
                       <div className="text-xs text-slate-400">us-east-1</div>
@@ -44,7 +44,7 @@ export function DashboardPreview() {
                     <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">Optimized Ready</span>
                   </div>
                   <div className="text-right">
-                    <button className="text-sm font-bold text-brand-orange bg-orange-50 px-4 py-2 rounded-xl hover:bg-orange-100 transition-colors">Remediate</button>
+                    <button className="text-sm font-bold text-brand-teal bg-teal-50 px-4 py-2 rounded-xl hover:bg-teal-100 transition-colors">Remediate</button>
                   </div>
                 </div>
               ))}

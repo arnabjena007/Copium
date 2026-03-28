@@ -22,7 +22,7 @@ export const VanishInput = ({
 
   return (
     <form
-      className="relative w-full max-w-2xl mx-auto bg-white h-16 rounded-full overflow-hidden shadow-2xl transition duration-200"
+      className="relative w-full max-w-2xl mx-auto bg-white h-16 rounded-full overflow-hidden shadow-2xl transition duration-200 border border-slate-100"
       onSubmit={onSubmit}
     >
       <input
@@ -40,9 +40,10 @@ export const VanishInput = ({
 
       <button
         type="submit"
-        className="absolute right-2 top-2 bottom-2 px-8 rounded-full bg-brand-orange text-white font-bold text-md transition-transform hover:scale-105 shadow-md flex items-center"
+        className="absolute right-2 top-2 bottom-2 px-8 rounded-full bg-brand-teal text-white font-bold text-md transition-all hover:scale-105 shadow-[0_0_15px_rgba(13,148,136,0.4)] hover:shadow-[0_0_25px_rgba(13,148,136,0.6)] flex items-center group overflow-hidden"
       >
-        Sync to Audit
+        <span className="relative z-10">Sync to Audit</span>
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
       </button>
     </form>
   );

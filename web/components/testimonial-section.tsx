@@ -37,7 +37,7 @@ export function TestimonialSection() {
             transition={{ duration: 0.6, ease: "easeOut", delay: idx * 0.1 }}
             className="bg-white border border-gray-100 rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-lg transition-shadow duration-300"
           >
-            <div className="flex gap-1 mb-6 text-brand-orange text-lg">
+            <div className="flex gap-1 mb-6 text-brand-teal text-lg">
               ★★★★★
             </div>
             <p className="text-slate-600 font-medium text-lg leading-relaxed mb-8">"{t.quote}"</p>

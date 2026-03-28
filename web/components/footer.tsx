@@ -42,7 +42,7 @@ export function Footer() {
         {/* Brand */}
         <div className="max-w-xs">
           <div className="flex items-center gap-2.5 mb-4">
-            <div className="w-9 h-9 rounded-xl bg-brand-orange flex items-center justify-center shadow-lg shadow-orange-200">
+            <div className="w-9 h-9 rounded-xl bg-brand-teal flex items-center justify-center shadow-lg shadow-teal-100">
               <span className="text-white font-black text-base leading-none">A</span>
             </div>
             <span className="font-extrabold text-brand-slate text-xl tracking-tight">Anomaly Engine</span>
@@ -60,7 +60,7 @@ export function Footer() {
               <a
                 key={s.name}
                 href={s.href}
-                className="w-9 h-9 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-500 text-xs font-bold hover:border-brand-orange hover:text-brand-orange transition-all duration-150 shadow-sm"
+                className="w-9 h-9 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-500 text-xs font-bold hover:border-brand-teal hover:text-brand-teal transition-all duration-150 shadow-sm"
               >
                 {s.name}
               </a>
@@ -79,9 +79,9 @@ export function Footer() {
               type="email"
               placeholder="you@company.com"
               autoComplete="off"
-              className="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-brand-slate placeholder-slate-400 focus:outline-none focus:border-brand-orange transition-colors"
+              className="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-brand-slate placeholder-slate-400 focus:outline-none focus:border-brand-teal transition-colors"
             />
-            <button className="bg-brand-orange text-white font-bold px-5 py-2.5 rounded-xl text-sm hover:bg-orange-500 transition-colors shadow-md shadow-orange-100 whitespace-nowrap">
+            <button className="bg-brand-teal text-white font-bold px-5 py-2.5 rounded-xl text-sm hover:bg-brand-teal-dark transition-colors shadow-md shadow-teal-50 whitespace-nowrap">
               Subscribe
             </button>
           </div>
@@ -109,7 +109,7 @@ export function Footer() {
                 <li key={link.label}>
                   <a
                     href={link.href}
-                    className="text-slate-600 text-sm hover:text-brand-orange transition-colors duration-150 font-medium"
+                    className="text-slate-600 text-sm hover:text-brand-teal transition-colors duration-150 font-medium"
                   >
                     {link.label}
                   </a>

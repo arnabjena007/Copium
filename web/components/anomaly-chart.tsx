@@ -28,8 +28,8 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     if (dataPoint.isAnomaly) {
       return (
         <div className="bg-[#1E293B] text-slate-300 p-3 pt-2 rounded border border-slate-700 min-w-[150px] shadow-2xl font-mono text-[0.65rem] tracking-wider">
-          <p className="text-brand-orange font-bold mb-[0.4rem] uppercase flex items-center gap-[6px]">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand-orange animate-pulse"/> Anomaly Detected
+          <p className="text-brand-teal font-bold mb-[0.4rem] uppercase flex items-center gap-[6px]">
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-teal animate-pulse"/> Anomaly Detected
           </p>
           <p className="text-slate-400 mb-[0.2rem] uppercase flex justify-between">
             <span>Time</span> <span className="text-white">{label}</span>
@@ -72,10 +72,10 @@ export function AnomalyChart({ className }: { className?: string }) {
           <Line
             type="monotone"
             dataKey="cost"
-            stroke="#FF8101"
+            stroke="#0D9488"
             strokeWidth={3}
             dot={false}
-            activeDot={{ r: 6, fill: "#FFFFFF", stroke: "#FF8101", strokeWidth: 3 }}
+            activeDot={{ r: 6, fill: "#FFFFFF", stroke: "#0D9488", strokeWidth: 3 }}
             animationDuration={2500}
             animationEasing="ease-out"
           />
@@ -85,8 +85,8 @@ export function AnomalyChart({ className }: { className?: string }) {
             x="12:00"
             y={490}
             r={10}
-            fill="rgba(239,68,68,0.15)"
-            stroke="#EF4444"
+            fill="rgba(13,148,136,0.15)"
+            stroke="#0D9488"
             strokeWidth={2}
           />
         </LineChart>
