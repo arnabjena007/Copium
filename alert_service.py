@@ -13,18 +13,18 @@ class AlertService:
     
     def send_alert(self, payload: Union[CostAnomaly, IdleResource]):
         is_anomaly = isinstance(payload, CostAnomaly)
-        color = self.color_palette["critical"] if is_anomaly and getattr(payload, "anomaly_score", 0) > 0.8 else self.color_palette["warning"]
+        color = self.color_palette["critical"] if is_anomaly and getattr(payload, "is_anomaly", False) else self.color_palette["warning"]
         
         message = {
             "attachments": [
                 {
                     "color": color,
                     "title": f"🚨 Cloud Cost Alert: {payload.service}",
-                    "text": f"Owner: {payload.owner}\nResource: {payload.resource}",
+                    "text": f"Owner: {getattr(payload, 'team', 'Unknown')}\nResource: {getattr(payload, 'resource_id', 'Unknown')}",
                     "fields": [
                         {
                             "title": "Cost Impact",
-                            "value": f"${payload.cost_original if is_anomaly else getattr(payload, 'wasted_cost', 0):.2f}",
+                            "value": f"${payload.cost_usd if hasattr(payload, 'cost_usd') else getattr(payload, 'wasted_cost', 0):.2f}",
                             "short": True
                         }
                     ]
