@@ -20,7 +20,7 @@ app.add_middleware(
 # In Vercel, the file is in web/api/index.py, and data is in web/data/mock_data.json
 DATA_PATH = Path(__file__).parent.parent / "data" / "mock_data.json"
 
-@app.get("/api/metrics/latest")
+@app.get("/metrics/latest")
 def get_latest_metrics():
     try:
         if not DATA_PATH.exists():
@@ -31,7 +31,7 @@ def get_latest_metrics():
     except Exception as e:
         return {"error": str(e)}
 
-@app.get("/api/dashboard")
+@app.get("/dashboard")
 def get_dashboard_data():
     return {
         "total_remediations_attempted": 25,
