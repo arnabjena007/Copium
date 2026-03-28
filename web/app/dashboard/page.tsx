@@ -23,13 +23,8 @@ export default function DashboardPage() {
 
   const fetchData = async () => {
     try {
-      // Use absolute URL for local development (8000) and relative for production
-      const baseApiUrl = process.env.NODE_ENV === 'production' 
-        ? "/api/dashboard" 
-        : "http://localhost:8000/api/dashboard";
-        
-      // Add cache buster to ensure the browser doesn't cache the response
-      const apiUrl = `${baseApiUrl}?t=${Date.now()}`;
+      // Always use the co-located Next.js API route
+      const apiUrl = `/api/dashboard?t=${Date.now()}`;
       console.log(`[Dashboard] Fetching data from: ${apiUrl}`);
         
       const response = await fetch(apiUrl);
