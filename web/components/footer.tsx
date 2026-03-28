@@ -2,7 +2,7 @@
 
 const productLinks = [
   { label: "Features", href: "#features" },
-  { label: "Dashboard", href: "#" },
+  { label: "Anomaly Dashboard", href: "https://kpi5dashboard.streamlit.app/" },
   { label: "Pricing", href: "#" },
   { label: "Changelog", href: "#" },
   { label: "Roadmap", href: "#" },
@@ -19,7 +19,7 @@ const integrationLinks = [
 const resourceLinks = [
   { label: "Documentation", href: "#" },
   { label: "API Reference", href: "#" },
-  { label: "Getting Started", href: "#" },
+  { label: "Live Audit Engine", href: "https://kpi5dashboard.streamlit.app/" },
   { label: "Status Page", href: "#" },
   { label: "Blog", href: "#" },
 ];
@@ -43,9 +43,9 @@ export function Footer() {
         <div className="max-w-xs">
           <div className="flex items-center gap-2.5 mb-4">
             <div className="w-9 h-9 rounded-xl bg-brand-orange flex items-center justify-center shadow-lg shadow-orange-200">
-              <span className="text-white font-black text-base leading-none">C</span>
+              <span className="text-white font-black text-base leading-none">A</span>
             </div>
-            <span className="font-extrabold text-brand-slate text-xl tracking-tight">CloudCFO</span>
+            <span className="font-extrabold text-brand-slate text-xl tracking-tight">Anomaly Engine</span>
           </div>
           <p className="text-slate-500 text-sm leading-relaxed mb-6">
             The automated FinOps command center for engineering teams spending on AWS. Identify waste, prevent overruns, and maintain control.
