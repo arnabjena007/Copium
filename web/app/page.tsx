@@ -13,6 +13,9 @@ import { VanishInput } from "../components/vanish-input";
 import { TypewriterEffect } from "../components/typewriter-effect";
 import { Box, Zap, Activity, BookOpen, Bot } from "lucide-react";
 import { Instrument_Serif } from "next/font/google";
+import dynamic from "next/dynamic";
+
+const Boxes = dynamic(() => import("../components/ui/background-boxes").then(mod => mod.Boxes), { ssr: false });
 
 const instrumentSerif = Instrument_Serif({ weight: "400", subsets: ["latin"] });
 
@@ -44,60 +47,64 @@ export default function Page() {
 
       <FloatingNavbar />
 
-      <main className="relative z-10 w-full pt-32 pb-16 flex flex-col items-center">
+      <main className="relative z-10 w-full pb-16 flex flex-col items-center">
         {/* HERO SECTION */}
-        <section className="w-full max-w-5xl mx-auto px-4 text-center mt-12 mb-16">
+        <div className="relative w-full overflow-hidden bg-cyan-950 flex flex-col items-center justify-center pt-32 pb-24 border-b border-cyan-900/50">
+          <Boxes />
+          
+          <section className="w-full max-w-5xl mx-auto px-4 text-center relative z-20">
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+            >
+              <h1 className="text-4xl md:text-7xl font-extrabold tracking-tight mb-8 leading-tight text-white drop-shadow-sm">
+                Find and fix <span className="text-cyan-300">cloud cost leaks</span> in seconds
+              </h1>
+            </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-          >
-            <h1 className="text-4xl md:text-7xl font-extrabold tracking-tight mb-8 leading-tight text-brand-slate drop-shadow-sm">
-              Find and fix <span className="text-brand-teal">cloud cost leaks</span> in seconds
-            </h1>
-          </motion.div>
+            <motion.p
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
+              className={`text-2xl md:text-3xl text-cyan-100/80 mb-12 max-w-3xl mx-auto leading-relaxed ${instrumentSerif.className}`}
+            >
+              A focused audit experience that reveals what matters and removes what doesn't.
+            </motion.p>
 
-          <motion.p
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
-            className={`text-2xl md:text-3xl text-slate-500 mb-12 max-w-3xl mx-auto leading-relaxed ${instrumentSerif.className}`}
-          >
-            A focused audit experience that reveals what matters and removes what doesn't.
-          </motion.p>
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
+              className="w-full max-w-3xl mx-auto mb-10 p-2"
+            >
+              <VanishInput
+                placeholders={placeholders}
+                onChange={() => { }}
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  window.location.href = "https://kpi5dashboard.streamlit.app/";
+                }}
+              />
+            </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
-            className="w-full max-w-3xl mx-auto mb-10 p-2"
-          >
-            <VanishInput
-              placeholders={placeholders}
-              onChange={() => { }}
-              onSubmit={(e) => {
-                e.preventDefault();
-                window.location.href = "https://kpi5dashboard.streamlit.app/";
-              }}
-            />
-          </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.5, ease: "easeOut" }}
+              className="flex flex-wrap justify-center gap-4 text-cyan-50 font-medium"
+            >
+              <button className="flex items-center gap-2 hover:bg-cyan-800/50 transition-colors bg-cyan-900/50 backdrop-blur-md px-5 py-2.5 border border-cyan-700/50 rounded-xl shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.1)] hover:-translate-y-1 duration-300"><Box size={18}/> Bulk Scan</button>
+              <button className="flex items-center gap-2 hover:bg-cyan-800/50 transition-colors bg-cyan-900/50 backdrop-blur-md px-5 py-2.5 border border-cyan-700/50 rounded-xl shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.1)] hover:-translate-y-1 duration-300"><Activity size={18} /> Compare</button>
+              <button className="flex items-center gap-2 hover:bg-cyan-800/50 transition-colors bg-cyan-900/50 backdrop-blur-md px-5 py-2.5 border border-cyan-700/50 rounded-xl shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.1)] hover:-translate-y-1 duration-300"><BookOpen size={18} /> Schema</button>
+              <button className="flex items-center gap-2 hover:bg-cyan-800/50 transition-colors bg-cyan-900/50 backdrop-blur-md px-5 py-2.5 border border-cyan-700/50 rounded-xl shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.1)] hover:-translate-y-1 duration-300"><Bot size={18} /> AI SuitePRO</button>
+              <button className="flex items-center gap-2 text-cyan-300 bg-cyan-950/80 px-5 py-2.5 rounded-xl transition-transform hover:-translate-y-1 border border-cyan-800 duration-300 font-bold">+12 more &rarr;</button>
+            </motion.div>
+          </section>
+        </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.5, ease: "easeOut" }}
-            className="flex flex-wrap justify-center gap-4 text-slate-600 font-medium"
-          >
-            <button className="flex items-center gap-2 hover:text-brand-slate transition-colors bg-white/70 backdrop-blur-md px-5 py-2.5 border border-slate-200 rounded-xl shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:-translate-y-1 duration-300"><Box size={18}/> Bulk Scan</button>
-            <button className="flex items-center gap-2 hover:text-brand-slate transition-colors bg-white/70 backdrop-blur-md px-5 py-2.5 border border-slate-200 rounded-xl shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:-translate-y-1 duration-300"><Activity size={18} /> Compare</button>
-            <button className="flex items-center gap-2 hover:text-brand-slate transition-colors bg-white/70 backdrop-blur-md px-5 py-2.5 border border-slate-200 rounded-xl shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:-translate-y-1 duration-300"><BookOpen size={18} /> Schema</button>
-            <button className="flex items-center gap-2 hover:text-brand-slate transition-colors bg-white/70 backdrop-blur-md px-5 py-2.5 border border-slate-200 rounded-xl shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:-translate-y-1 duration-300"><Bot size={18} /> AI SuitePRO</button>
-            <button className="flex items-center gap-2 text-brand-teal bg-teal-50 px-5 py-2.5 rounded-xl transition-transform hover:-translate-y-1 duration-300 font-bold">+12 more &rarr;</button>
-          </motion.div>
-        </section>
-
-        {/* MODULAR SECTIONS */}
+        <div className="pt-16 w-full max-w-6xl mx-auto flex flex-col items-center">
+          {/* MODULAR SECTIONS */}
         <FeatureGrid />
 
         <section className="mb-32 w-full max-w-6xl mx-auto px-4 md:px-6">
@@ -137,6 +144,7 @@ export default function Page() {
 
         <FaqAccordion />
 
+      </div>
       </main>
 
       {/* Scroll-convergence CTA — sits outside main, full-bleed */}
