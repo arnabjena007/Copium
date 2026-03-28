@@ -890,6 +890,19 @@ def main() -> None:
             unsafe_allow_html=True,
         )
 
+        if st.session_state.boto_fixed:
+            st.success(f"Audit update: Successfully executed the remediation protocol on {featured.get('resource_id', 'Unknown')}.")
+        else:
+            st.markdown("<br>", unsafe_allow_html=True)
+            if st.button("Apply Fix Script", type="primary", use_container_width=True):
+                anomaly_model = CostAnomaly(**featured)
+                with st.spinner("Executing..."):
+                    res = fix_resource(
+                        anomaly_model, totals["total_burn"], totals["savings"]
+                    )
+                    st.session_state.boto_fixed = True
+                    st.rerun()
+
 
 
 
