@@ -214,7 +214,7 @@ def build_cost_figure(records: List[Dict[str, Any]], fixed: bool) -> go.Figure:
             name="Current Spend",
             line={"color": "#26C1B6" if not fixed else "#CBD5E1", "width": 3},
             fill="tozeroy",
-            fillcolor="rgba(56,193,182,0.15)"
+            fillcolor="rgba(38,193,182,0.15)"
             if not fixed
             else "rgba(203,213,225,0.12)",
             hovertemplate="%{x}<br>Current: $%{y:,.0f}<extra></extra>",
@@ -228,9 +228,9 @@ def build_cost_figure(records: List[Dict[str, Any]], fixed: bool) -> go.Figure:
                 y=spike_y,
                 mode="markers+lines",
                 name="Anomaly Spike",
-                line={"color": "#38C1B6", "width": 5},
+                line={"color": "#EF4444", "width": 5},
                 marker={
-                    "color": "#38C1B6",
+                    "color": "#EF4444",
                     "size": 12,
                     "symbol": "circle-open",
                     "line": {"width": 3},
@@ -245,7 +245,7 @@ def build_cost_figure(records: List[Dict[str, Any]], fixed: bool) -> go.Figure:
             y=optimized,
             mode="lines+markers",
             name="Optimized Baseline",
-            line={"color": "#5EEAD4", "width": 3, "dash": "dash"},
+            line={"color": "#10B981", "width": 3, "dash": "dash"},
             hovertemplate="%{x}<br>Optimized: $%{y:,.0f}<extra></extra>",
         )
     )
@@ -286,7 +286,7 @@ def build_cpu_cost_scatter(records: List[Dict[str, Any]]) -> go.Figure:
             y=anomalies["cost_usd"],
             mode="markers",
             name="Anomalies (Engine Flagged)",
-            marker=dict(color="#26C1B6", size=10, symbol="cross", opacity=0.8),
+            marker=dict(color="#EF4444", size=10, symbol="cross", opacity=0.8),
             hovertemplate="CPU: %{x}%<br>Cost: $%{y}<br>ID: %{text}<extra></extra>",
             text=anomalies["resource_id"],
         )
