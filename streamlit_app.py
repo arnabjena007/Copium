@@ -114,7 +114,7 @@ def load_data(live: bool = False) -> List[Dict[str, Any]]:
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
                 "bypass-tunnel-reminder": "true" 
             }
-            resp = requests.get(f"{hub_url}/api/ml/anomalies", headers=headers, timeout=20)
+            resp = requests.get(f"{hub_url}/api/ml/anomalies", headers=headers, timeout=35)
             
             # Show live status in sidebar
             st.sidebar.caption(f"📡 Bridge Response: {resp.status_code}")
@@ -820,7 +820,7 @@ def main() -> None:
                             auth_resp = requests.post(f"{hub_url}/api/auth/validate-arn", 
                                                     json={"arn": arn}, 
                                                     headers=headers, 
-                                                    timeout=10)
+                                                    timeout=35)
                             if auth_resp.status_code == 200:
                                 with st.spinner("Handshaking with Local Hub..."):
                                     time.sleep(1.2)
