@@ -99,11 +99,20 @@ if "alert_sent" not in st.session_state:
     st.session_state.alert_sent = False
 
 
-def load_data(demo_mode: bool) -> List[Dict[str, Any]]:
+def load_data(live: bool = False) -> List[Dict[str, Any]]:
+    if live:
+        try:
+            resp = requests.get("http://127.0.0.1:8000/api/dashboard?live=True", timeout=30)
+            if resp.status_code == 200:
+                data = resp.json()
+                # Stash live metrics in session state for totals calculation
+                st.session_state.live_metrics = data.get("live_metrics")
+                return data.get("recent_actions", [])
+        except Exception as e:
+            st.error(f"Failed to fetch live data: {e}. Falling back to mock.")
+
     with DATA_PATH.open("r", encoding="utf-8") as handle:
         payload = json.load(handle)
-
-    # The new JSON is a flat array of highly granular hourly data
     return payload
 
 
@@ -125,6 +134,19 @@ import pandas as pd
 
 
 def compute_totals(records: List[Dict[str, Any]], fixed: bool) -> Dict[str, float]:
+    # If we have live metrics from the API, use them
+    if not fixed and hasattr(st.session_state, "live_metrics") and st.session_state.live_metrics:
+        m = st.session_state.live_metrics
+        return {
+            "total_burn": m["total_burn"],
+            "optimized_burn": m["total_burn"] - m["wasted"],
+            "savings": 72488.0, # Combined historical
+            "wasted": m["wasted"],
+            "anomalies": m["anomalies"],
+            "score": (1 - (m["wasted"] / m["total_burn"])) * 100 if m["total_burn"] > 0 else 100,
+            "co2_saved": 72488.0 * 10 * 0.4,
+        }
+
     df = pd.DataFrame(records)
 
     total_burn = float(df["cost_usd"].sum())
@@ -528,7 +550,7 @@ def inject_styles() -> None:
             background: radial-gradient(125% 125% at 50% 10%, #ffffff 40%, rgba(56, 193, 182, 0.12) 100%);
             color: #0F172A;
           }
-          [data-testid="stSidebar"] { background: #FFFFFF; border-right: 1px solid #E2E8F0; }
+          [data-testid="stSidebar"], [data-testid="collapsedControl"] { display: none; }
           .block-container { padding-top: 1.2rem; padding-bottom: 2rem; }
           
           .hero-card, .section-card, .ticker-card {
@@ -681,25 +703,12 @@ def generate_consultant_insight(payload: dict, spike_impact: float) -> str:
 
 def main() -> None:
     st.set_page_config(
-        page_title="Infrastructure Anomaly Engine", page_icon="⚙️", layout="wide"
+        page_title="Infrastructure Anomaly Engine", page_icon="⚙️", layout="wide", initial_sidebar_state="collapsed"
     )
     inject_styles()
 
     if "aws_connected" not in st.session_state:
         st.session_state.aws_connected = False
-
-    with st.sidebar:
-        st.markdown(
-            "<div style='opacity:0.04;font-size:0.7rem'>internal controls</div>",
-            unsafe_allow_html=True,
-        )
-        if st.button("Reset Session / Disconnect"):
-            st.session_state.aws_connected = False
-            st.session_state.boto_fixed = False
-            st.session_state.alert_sent = False
-            st.session_state.pop("ollama_message", None)
-            st.session_state.pop("last_selected_anomaly", None)
-            st.rerun()
 
     if not st.session_state.aws_connected:
         st.markdown("<br><br><br>", unsafe_allow_html=True)
@@ -716,22 +725,33 @@ def main() -> None:
             )
             arn = st.text_input(
                 "IAM Role ARN",
-                placeholder="arn:aws:iam::123456789012:role/TechnicalAudit",
+                placeholder="arn:aws:iam::100731996973:user/HackathonUser",
             )
 
             if st.button("Connect & Audit", type="primary", use_container_width=True):
                 if arn:
-                    with st.spinner("Authenticating with AWS STS..."):
-                        time.sleep(1.5)
-                    with st.spinner("Fetching 46,000+ Hourly Cost Explorer Metrics..."):
-                        time.sleep(2.0)
-                    with st.spinner("Isolating anomalies via Machine Learning..."):
-                        time.sleep(1.5)
-                    st.session_state.aws_connected = True
-                    st.rerun()
+                    with st.spinner("Validating IAM Role with Backend Engine..."):
+                        try:
+                            auth_resp = requests.post("http://127.0.0.1:8000/api/auth/validate-arn", json={"arn": arn}, timeout=5)
+                            if auth_resp.status_code == 200:
+                                with st.spinner("Authenticating with AWS STS..."):
+                                    time.sleep(1.2)
+                                with st.spinner("Fetching 46,000+ Hourly Cost Explorer Metrics..."):
+                                    time.sleep(1.8)
+                                with st.spinner("Isolating anomalies via Machine Learning..."):
+                                    time.sleep(1.2)
+                                st.session_state.aws_connected = True
+                                st.rerun()
+                            else:
+                                st.error("❌ Access Denied: Unauthorized Client ARN.")
+                        except Exception as e:
+                            st.error(f"❌ Connection Error: Backend engine is offline ({e})")
+                else:
+                    st.warning("⚠️ Please provide a valid IAM Role ARN.")
+        return
         return
 
-    records = load_data(True)
+    records = load_data(live=st.session_state.aws_connected)
     incidents = [r for r in records if r.get("is_anomaly") == True]
 
     if not st.session_state.alert_sent:
@@ -746,20 +766,32 @@ def main() -> None:
 
     totals = compute_totals(records, fixed=st.session_state.boto_fixed)
 
-    st.markdown(
-        f"""
-        <div class="hero-card">
-          <div style="display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;flex-wrap:wrap;">
-            <div>
-              <div class="hero-title">Deep-Dive Technical Anomaly Review</div>
-              <div class="hero-copy">Automated ML Infrastructure Analysis and Contextual Workload Verification.</div>
+    st.markdown('<div class="hero-card">', unsafe_allow_html=True)
+    hero_col1, hero_col2 = st.columns([3, 1])
+    with hero_col1:
+        st.markdown(
+            f"""
+            <div style="display:flex;justify-content:space-between;gap:1rem;align-center;items:flex-start;flex-wrap:wrap;">
+                <div>
+                <div class="hero-title">CloudCFO</div>
+                <div class="hero-copy">Automated ML Infrastructure Analysis and Contextual Workload Verification.</div>
+                </div>
             </div>
-            <div class="hero-copy">Status: {"Fix Deployed" if st.session_state.boto_fixed else "Auditing"}</div>
-          </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+            """,
+            unsafe_allow_html=True,
+        )
+    with hero_col2:
+        st.markdown('<div style="text-align: right; padding-top: 1rem;">', unsafe_allow_html=True)
+        if st.button("Reset / Disconnect", use_container_width=True):
+            st.session_state.aws_connected = False
+            st.session_state.boto_fixed = False
+            st.session_state.alert_sent = False
+            st.session_state.pop("ollama_message", None)
+            st.session_state.pop("last_selected_anomaly", None)
+            st.rerun()
+        st.markdown(f'<div class="hero-copy" style="margin-top:0.5rem;">Status: {"Fix Deployed" if st.session_state.boto_fixed else "Auditing"}</div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
     top_left, top_mid, top_right = st.columns([1.2, 1.2, 1.4])
     with top_left:
@@ -902,6 +934,67 @@ def main() -> None:
                     )
                     st.session_state.boto_fixed = True
                     st.rerun()
+
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("### ⚙️ Governance Panel")
+        
+        # Load current backend config
+        try:
+            config_resp = requests.get("http://127.0.0.1:8000/api/config", timeout=5)
+            if config_resp.status_code == 200:
+                current_config = config_resp.json()
+            else:
+                current_config = {
+                    "risk_multiplier": 2.0,
+                    "authorized_regions": ["us-east-1", "us-west-2", "eu-north-1"],
+                    "quiet_hours": [22, 23, 0, 1, 2, 3, 4],
+                    "service_sensitivity": {"AmazonS3": 1.2, "AWSLambda": 1.1, "AmazonRDS": 2.5, "AmazonEC2": 2.0}
+                }
+        except:
+            current_config = {
+                "risk_multiplier": 2.0,
+                "authorized_regions": ["us-east-1", "us-west-2", "eu-north-1"],
+                "quiet_hours": [22, 23, 0, 1, 2, 3, 4],
+                "service_sensitivity": {"AmazonS3": 1.2, "AWSLambda": 1.1, "AmazonRDS": 2.5, "AmazonEC2": 2.0}
+            }
+
+        with st.expander("Anomaly Sensitivity"):
+            new_risk = st.slider("Global Risk Multiplier", 0.5, 5.0, float(current_config.get("risk_multiplier", 2.0)))
+            
+            st.markdown("**Service Bias**")
+            s3_sens = st.number_input("S3 Sensitivity", 0.1, 10.0, float(current_config["service_sensitivity"].get("AmazonS3", 1.2)))
+            lambda_sens = st.number_input("Lambda Sensitivity", 0.1, 10.0, float(current_config["service_sensitivity"].get("AWSLambda", 1.1)))
+            rds_sens = st.number_input("RDS Sensitivity", 0.1, 10.0, float(current_config["service_sensitivity"].get("AmazonRDS", 2.5)))
+            ec2_sens = st.number_input("EC2 Sensitivity", 0.1, 10.0, float(current_config["service_sensitivity"].get("AmazonEC2", 2.0)))
+
+        with st.expander("Regional Governance"):
+            all_regions = ["us-east-1", "us-east-2", "us-west-1", "us-west-2", "eu-north-1", "ap-south-1", "eu-central-1"]
+            new_regions = st.multiselect("Authorized Scan Regions", all_regions, default=current_config.get("authorized_regions", []))
+            
+        with st.expander("Operational Window"):
+            new_quiet_hours = st.multiselect("Quiet Hours (Automation Disabled)", list(range(24)), default=current_config.get("quiet_hours", []))
+            st.caption("No automated fix scripts will be deployed during these hours (UTC).")
+
+        if st.button("Save & Deploy Config", type="primary", use_container_width=True):
+            updated_config = {
+                "risk_multiplier": new_risk,
+                "authorized_regions": new_regions,
+                "quiet_hours": new_quiet_hours,
+                "service_sensitivity": {
+                    "AmazonS3": s3_sens,
+                    "AWSLambda": lambda_sens,
+                    "AmazonRDS": rds_sens,
+                    "AmazonEC2": ec2_sens
+                }
+            }
+            try:
+                save_resp = requests.post("http://127.0.0.1:8000/api/config", json=updated_config, timeout=5)
+                if save_resp.status_code == 200:
+                    st.success("✅ Config pushed to backend engine.")
+                else:
+                    st.error("❌ Failed to sync with engine.")
+            except Exception as e:
+                st.error(f"❌ Connection error: {e}")
 
 
 

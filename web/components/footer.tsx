@@ -2,7 +2,7 @@
 
 const productLinks = [
   { label: "Features", href: "#features" },
-  { label: "Anomaly Dashboard", href: "https://kpi5dashboard.streamlit.app/" },
+  { label: "Anomaly Dashboard", href: "http://localhost:8501" },
   { label: "Pricing", href: "#" },
   { label: "Changelog", href: "#" },
   { label: "Roadmap", href: "#" },
@@ -19,7 +19,7 @@ const integrationLinks = [
 const resourceLinks = [
   { label: "Documentation", href: "#" },
   { label: "API Reference", href: "#" },
-  { label: "Live Audit Engine", href: "https://kpi5dashboard.streamlit.app/" },
+  { label: "Live Audit Engine", href: "http://localhost:8501" },
   { label: "Status Page", href: "#" },
   { label: "Blog", href: "#" },
 ];

@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Box } from "lucide-react";
 
-export function FloatingNavbar() {
+export function FloatingNavbar({ transparentWhite = false }: { transparentWhite?: boolean }) {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -29,13 +29,12 @@ export function FloatingNavbar() {
           <div className="w-10 h-10 bg-brand-teal text-white rounded-xl flex items-center justify-center shadow-lg group-hover:-translate-y-1 transition-transform">
             <Box size={22} className="stroke-[2.5]" />
           </div>
-          <span className="text-xl font-bold tracking-tight text-brand-slate">CloudCFO</span>
+          <span className={`text-xl font-bold tracking-tight transition-colors duration-300 ${scrolled ? "text-brand-slate" : (transparentWhite ? "text-white" : "text-brand-slate")}`}>CloudCFO</span>
         </a>
-        <div className="hidden md:flex items-center gap-8 font-medium text-slate-600">
-          <a href="/dashboard" className="text-brand-teal font-bold hover:text-brand-teal-light transition-colors">Dashboard</a>
-          <a href="#features" className="hover:text-brand-teal transition-colors">Features</a>
-          <a href="#testimonials" className="hover:text-brand-teal transition-colors">Testimonials</a>
-          <a href="#faq" className="hover:text-brand-teal transition-colors">FAQ</a>
+        <div className={`hidden md:flex items-center gap-8 font-medium transition-colors duration-300 ${scrolled ? "text-slate-600" : (transparentWhite ? "text-white/80" : "text-slate-600")}`}>
+          <a href="http://localhost:8501" className={`font-bold transition-all hover:-translate-y-0.5 ${scrolled ? "text-brand-teal hover:text-brand-teal-light" : (transparentWhite ? "text-white" : "text-brand-teal hover:text-brand-teal-light")}`}>Dashboard</a>
+          <a href="#features" className={`transition-colors ${scrolled ? "hover:text-brand-teal" : (transparentWhite ? "hover:text-white" : "hover:text-brand-teal")}`}>Features</a>
+          <a href="#faq" className={`transition-colors ${scrolled ? "hover:text-brand-teal" : (transparentWhite ? "hover:text-white" : "hover:text-brand-teal")}`}>FAQ</a>
         </div>
         <div className="flex items-center" />
       </div>

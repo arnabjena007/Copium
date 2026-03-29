@@ -3,14 +3,12 @@
 import { motion } from "framer-motion";
 import { FloatingNavbar } from "../components/floating-navbar";
 import { FeatureGrid } from "../components/feature-grid";
-import { TestimonialSection } from "../components/testimonial-section";
 import { DashboardPreview } from "../components/dashboard-preview";
 import { AnomalyChart } from "../components/anomaly-chart";
 import { FaqAccordion } from "../components/faq-accordion";
 import { IntegrationsCloud } from "../components/integrations-cloud";
 import { Footer } from "../components/footer";
 import { VanishInput } from "../components/vanish-input";
-import { TypewriterEffect } from "../components/typewriter-effect";
 import { Box, Zap, Activity, BookOpen, Bot } from "lucide-react";
 import { Instrument_Serif } from "next/font/google";
 import dynamic from "next/dynamic";
@@ -45,7 +43,7 @@ export default function Page() {
         }}
       />
 
-      <FloatingNavbar />
+      <FloatingNavbar transparentWhite={true} />
 
       <main className="relative z-10 w-full pb-16 flex flex-col items-center">
         {/* HERO SECTION */}
@@ -83,7 +81,7 @@ export default function Page() {
                 onChange={() => { }}
                 onSubmit={(e) => {
                   e.preventDefault();
-                  window.location.href = "https://kpi5dashboard.streamlit.app/";
+                  window.location.href = "http://localhost:8501";
                 }}
               />
             </motion.div>
@@ -105,51 +103,41 @@ export default function Page() {
 
         <div className="pt-16 w-full max-w-6xl mx-auto flex flex-col items-center">
           {/* MODULAR SECTIONS */}
-        <FeatureGrid />
+          <FeatureGrid />
 
-        <section className="mb-32 w-full max-w-6xl mx-auto px-4 md:px-6">
-          <div className="bg-[#0B0F17] rounded-3xl overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] relative flex flex-col md:flex-row items-center cursor-default">
+          <section className="mb-32 w-full max-w-6xl mx-auto px-4 md:px-6">
+            <div className="bg-[#0B0F17] rounded-3xl overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] relative flex flex-col md:flex-row items-center cursor-default">
+              {/* Context Layer */}
+              <div className="md:w-1/2 p-10 md:p-14 z-10 relative">
+                <h2 className="text-3xl md:text-[2.8rem] font-extrabold text-white mb-5 leading-[1.15] tracking-tight">
+                  Engineered to catch <br className="hidden md:block" /> <span className="text-brand-teal-light">mass traffic bursts</span>
+                </h2>
+                <p className="text-slate-400 text-lg md:text-xl font-medium mb-8 leading-relaxed max-w-md">
+                  Keep your financial pipelines running smoothly while our engines intercept idle resources and viral-load spikes before they map to your billing cycle.
+                </p>
+                <button className="text-brand-teal-light font-bold flex items-center gap-2 hover:gap-3 transition-all text-lg tracking-wide hover:text-teal-300">
+                  Interceptor Docs &rarr;
+                </button>
+              </div>
 
-            {/* Context Layer */}
-            <div className="md:w-1/2 p-10 md:p-14 z-10 relative">
-              <h2 className="text-3xl md:text-[2.8rem] font-extrabold text-white mb-5 leading-[1.15] tracking-tight">
-                Engineered to catch <br className="hidden md:block" /> <span className="text-brand-teal-light">mass traffic bursts</span>
-              </h2>
-              <p className="text-slate-400 text-lg md:text-xl font-medium mb-8 leading-relaxed max-w-md">
-                Keep your financial pipelines running smoothly while our engines intercept idle resources and viral-load spikes before they map to your billing cycle.
-              </p>
-              <button className="text-brand-teal-light font-bold flex items-center gap-2 hover:gap-3 transition-all text-lg tracking-wide hover:text-teal-300">
-                Interceptor Docs &rarr;
-              </button>
-            </div>
-
-            {/* Aesthetic Graph Background Layer */}
-            <div className="md:w-1/2 h-[350px] md:h-[450px] w-full relative z-0 overflow-hidden opacity-90 md:opacity-100 flex items-center justify-end">
-
-              {/* Fade gradient so the graph blends into the text horizontally */}
-              <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#0B0F17] to-transparent z-10 pointer-events-none max-md:hidden" />
-              <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[#0B0F17] to-transparent z-10 pointer-events-none md:hidden" />
-
-              <div className="absolute inset-0 w-[120%] -right-[15%] h-[120%] top-[-10%] flex items-center opacity-80 pointer-events-auto">
-                <AnomalyChart className="scale-105 translate-y-6 md:translate-y-8" />
+              {/* Aesthetic Graph Background Layer */}
+              <div className="md:w-1/2 h-[350px] md:h-[450px] w-full relative z-0 overflow-hidden opacity-90 md:opacity-100 flex items-center justify-end">
+                <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#0B0F17] to-transparent z-10 pointer-events-none max-md:hidden" />
+                <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[#0B0F17] to-transparent z-10 pointer-events-none md:hidden" />
+                <div className="absolute inset-0 w-[120%] -right-[15%] h-[120%] top-[-10%] flex items-center opacity-80 pointer-events-auto">
+                  <AnomalyChart className="scale-105 translate-y-6 md:translate-y-8" />
+                </div>
               </div>
             </div>
+          </section>
 
-          </div>
-        </section>
+          <DashboardPreview />
 
-        <DashboardPreview />
-
-        <TestimonialSection />
-
-        <FaqAccordion />
-
-      </div>
+          <FaqAccordion />
+        </div>
       </main>
 
-      {/* Scroll-convergence CTA — sits outside main, full-bleed */}
       <IntegrationsCloud />
-
       <Footer />
     </div>
   );
