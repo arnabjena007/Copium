@@ -2,18 +2,46 @@ import json
 import logging
 from typing import Any
 
-from fastapi import FastAPI, Request, HTTPException, BackgroundTasks
+from fastapi import FastAPI, Request, HTTPException, BackgroundTasks, Header, Depends
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from slack_sdk.signature import SignatureVerifier
 
+# Security config for Tunnel Bridge
+API_KEY = "3d4c5eb8-9fe0-4458-882d-5750d9a78947"
+
+async def verify_api_key(x_api_key: str = Header(None, alias="X-API-KEY")):
+    if x_api_key != API_KEY:
+        raise HTTPException(status_code=403, detail="Invalid or missing API Key")
+    return x_api_key
+
 from config.settings import slack_settings
 from automation.remediation.remediator import RemediationEngine
+
+from pathlib import Path
 
 logger = logging.getLogger("cloudcfo.api")
 logging.basicConfig(level=logging.INFO)
 
 app = FastAPI(title="CloudCFO Webhook Listener", version="1.0.0")
+
+# --- Governance Config ---
+CONFIG_PATH = Path("config/backend_config.json")
+def load_backend_config():
+    if not CONFIG_PATH.exists():
+        return {
+            "risk_multiplier": 2.0, 
+            "authorized_regions": ["us-east-1", "us-west-2", "eu-north-1"], 
+            "quiet_hours": [22,23,0,1,2,3,4], 
+            "service_sensitivity": {"AmazonS3": 1.2, "AWSLambda": 1.1, "AmazonRDS": 2.5, "AmazonEC2": 2.0}
+        }
+    with open(CONFIG_PATH, "r") as f:
+        return json.load(f)
+
+def save_backend_config(config):
+    CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
+    with open(CONFIG_PATH, "w") as f:
+        json.dump(config, f, indent=4)
 
 app.add_middleware(
     CORSMiddleware,
@@ -28,7 +56,56 @@ engine = RemediationEngine()
 
 @app.get("/")
 async def root():
-    return {"status": "CloudCFO ML Brain is Online", "tunnel": "Active", "version": "1.1.0"}
+    return {"status": "CloudCFO Webhook Listener is Online", "tunnel": "Active", "version": "1.1.0"}
+
+@app.post("/api/auth/validate-arn")
+async def validate_arn(request: Request, key: str = Depends(verify_api_key)):
+    try:
+        data = await request.json()
+        arn = data.get("arn")
+        authorized_arn = "arn:aws:iam::100731996973:user/HackathonUser"
+        
+        if arn == authorized_arn:
+            logger.info(f"Authorized access for ARN: {arn}")
+            return {"status": "success", "message": "Authorized"}
+        else:
+            logger.warning(f"Unauthorized access attempt with ARN: {arn}")
+            return JSONResponse(status_code=403, content={"status": "error", "message": "Unauthorized ARN"})
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@app.get("/api/ml/anomalies")
+async def get_ml_anomalies(key: str = Depends(verify_api_key)):
+    """
+    Returns real-time anomaly data for the Tunnel Bridge frontend.
+    """
+    from automation.reporting.ml_alert_runner import AUDIT_LOG_PATH
+    import os
+    
+    # Normally we would run a live scan, but since this is the webhook listener,
+    # we return the latest mock data or recent audit actions.
+    # For the hackathon demo, we'll return the mock data to populate the dashboard.
+    mock_path = os.path.join(os.getcwd(), "data", "mock_data.json")
+    try:
+        if os.path.exists(mock_path):
+            with open(mock_path, "r", encoding="utf-8") as f:
+                return {"status": "success", "data": json.load(f)}
+        return {"status": "error", "message": "Data source not found"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@app.get("/api/config")
+async def get_config(key: str = Depends(verify_api_key)):
+    return load_backend_config()
+
+@app.post("/api/config")
+async def update_config(request: Request, key: str = Depends(verify_api_key)):
+    try:
+        new_config = await request.json()
+        save_backend_config(new_config)
+        return {"status": "success", "config": new_config}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 @app.post("/api/slack/interactions")
 async def slack_interactions(request: Request, background_tasks: BackgroundTasks):
@@ -163,7 +240,7 @@ def process_remediation(action_value: str, user_id: str):
         logger.error(f"Error executing remediation in background task: {e}", exc_info=True)
 
 @app.get("/api/dashboard")
-def get_dashboard_metrics():
+def get_dashboard_metrics(key: str = Depends(verify_api_key)):
     """
     Phase 5: Aggregate the audit_log.json to provide live savings and operation counts for the UI frontend.
     """
@@ -246,7 +323,7 @@ def get_dashboard_metrics():
         raise HTTPException(status_code=500, detail="Internal server error parsing audit log")
 
 @app.get("/api/costs")
-def get_live_costs():
+def get_live_costs(key: str = Depends(verify_api_key)):
     """
     Feeds LIVE AWS Cost & Usage Data to the ML Brain.
     Fetches real-time compute inventory using boto3 and the ML team's credentials.
