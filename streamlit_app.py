@@ -109,7 +109,10 @@ def load_data(live: bool = False) -> List[Dict[str, Any]]:
         try:
             hub_url = tunnel_url.rstrip("/")
             # We fetch straight from your Local Hub via the tunnel
-            headers = {"X-API-KEY": api_key}
+            headers = {
+                "X-API-KEY": api_key,
+                "bypass-tunnel-reminder": "true" # Bypass Localtunnel safety page
+            }
             resp = requests.get(f"{hub_url}/api/ml/anomalies", headers=headers, timeout=20)
             if resp.status_code == 200:
                 data = resp.json().get("data", [])
@@ -760,8 +763,10 @@ def main() -> None:
                         try:
                             # 🏹 Use the tunnel_url here!
                             hub_url = st.session_state.tunnel_url.rstrip("/")
-                            api_key = st.secrets.get("CLOUD_CFO_API_KEY", "3d4c5eb8-9fe0-4458-882d-5750d9a78947")
-                            headers = {"X-API-KEY": api_key}
+                            headers = {
+                                "X-API-KEY": api_key,
+                                "bypass-tunnel-reminder": "true" # Bypass Localtunnel safety page
+                            }
                             
                             # Authenticate with your local machine
                             auth_resp = requests.post(f"{hub_url}/api/auth/validate-arn", 
@@ -774,7 +779,9 @@ def main() -> None:
                                 st.session_state.aws_connected = True
                                 st.rerun()
                             else:
-                                st.error("❌ Invalid ARN or Security Key. Try 'arn:aws:iam::100731996973:user/HackathonUser'")
+                                st.error(f"❌ Access Denied ({auth_resp.status_code}): Unauthorized ARN or Security Key.")
+                                if auth_resp.status_code == 403:
+                                    st.info("Check if your Backend and Dashboard use the same API Key.")
                         except Exception as e:
                             st.error(f"❌ Could not reach Local Hub: {e}")
                 elif not arn:
@@ -1023,7 +1030,10 @@ def main() -> None:
             try:
                 tunnel_url = st.session_state.get("tunnel_url", "http://127.0.0.1:8000").rstrip("/")
                 api_key = st.secrets.get("CLOUD_CFO_API_KEY", "3d4c5eb8-9fe0-4458-882d-5750d9a78947")
-                headers = {"X-API-KEY": api_key}
+                headers = {
+                    "X-API-KEY": api_key,
+                    "bypass-tunnel-reminder": "true"
+                }
                 save_resp = requests.post(f"{tunnel_url}/api/config", json=updated_config, headers=headers, timeout=5)
                 if save_resp.status_code == 200:
                     st.success("✅ Config pushed to local backend engine.")
