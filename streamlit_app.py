@@ -565,7 +565,6 @@ def inject_styles() -> None:
             background: radial-gradient(125% 125% at 50% 10%, #ffffff 40%, rgba(56, 193, 182, 0.12) 100%);
             color: #0F172A;
           }
-          [data-testid="stSidebar"], [data-testid="collapsedControl"] { display: none; }
           .block-container { padding-top: 1.2rem; padding-bottom: 2rem; }
           
           .hero-card, .section-card, .ticker-card {
@@ -718,7 +717,7 @@ def generate_consultant_insight(payload: dict, spike_impact: float) -> str:
 
 def main() -> None:
     st.set_page_config(
-        page_title="Infrastructure Anomaly Engine", page_icon="⚙️", layout="wide"
+        page_title="Infrastructure Anomaly Engine", page_icon="⚙️", layout="wide", initial_sidebar_state="expanded"
     )
 
     # 🏹 NEW: Add Connection Sidebar (Visible on Vercel/Cloud to link back to local)
