@@ -103,20 +103,20 @@ if "alert_sent" not in st.session_state:
 def load_data(live: bool = False) -> List[Dict[str, Any]]:
     # 🏹 NEW: Use Local Hub Tunnel instead of 127.0.0.1
     tunnel_url = st.session_state.get("tunnel_url")
-    api_key = st.secrets.get("CLOUD_CFO_API_KEY", "3d4c5eb8-9fe0-4458-882d-5750d9a78947")
+    # HARDCODED FOR DEMO RELIABILITY
+    api_key = "3d4c5eb8-9fe0-4458-882d-5750d9a78947"
     
     if live and tunnel_url:
         try:
             hub_url = tunnel_url.rstrip("/")
-            # We fetch straight from your Local Hub via the tunnel
             headers = {
                 "X-API-KEY": api_key,
-                "bypass-tunnel-reminder": "true" # Bypass Localtunnel safety page
+                "bypass-tunnel-reminder": "true" 
             }
             resp = requests.get(f"{hub_url}/api/ml/anomalies", headers=headers, timeout=20)
+            
             if resp.status_code == 200:
                 data = resp.json().get("data", [])
-                # Sync live metrics based on fetched anomalies
                 if data:
                     df = pd.DataFrame(data)
                     st.session_state.live_metrics = {
@@ -125,8 +125,15 @@ def load_data(live: bool = False) -> List[Dict[str, Any]]:
                         "wasted": float(df[df["is_anomaly"]]["cost_usd"].sum() * 0.85)
                     }
                 return data
+            else:
+                st.sidebar.error(f"🚨 Bridge Rejected: {resp.status_code}")
+                st.sidebar.info(f"Reason: {resp.text}")
+                return []
         except Exception as e:
             st.error(f"🔌 Connection Lost to Local Hub: {e}")
+            return []
+    
+    # Static Data Logic Fallback...
 
     # Fallback to mock if not connected
     with DATA_PATH.open("r", encoding="utf-8") as handle:
