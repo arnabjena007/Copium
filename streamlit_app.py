@@ -99,7 +99,7 @@ if "alert_sent" not in st.session_state:
     st.session_state.alert_sent = False
 
 
-@st.cache_data(ttl=60)
+# @st.cache_data(ttl=60)
 def load_data(live: bool = False) -> List[Dict[str, Any]]:
     # 🏹 NEW: Use Local Hub Tunnel instead of 127.0.0.1
     tunnel_url = st.session_state.get("tunnel_url")
@@ -829,6 +829,16 @@ def main() -> None:
         return
 
     records = load_data(live=st.session_state.aws_connected)
+    
+    # 🏹 NEW: Raw Bridge Ingress Monitor
+    with st.sidebar.expander("📡 Raw Bridge Ingress", expanded=True):
+        if records:
+            st.success(f"Ingested {len(records)} live AWS records.")
+            st.json(records[:3]) # Show top 3 for debug
+        else:
+            st.warning("No data reaching the dashboard yet...")
+            st.info("Check your Localtunnel URL and ensure your backend is running.")
+
     incidents = [r for r in records if r.get("is_anomaly") == True]
 
     if not st.session_state.alert_sent:
