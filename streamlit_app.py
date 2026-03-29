@@ -763,6 +763,7 @@ def main() -> None:
                         try:
                             # 🏹 Use the tunnel_url here!
                             hub_url = st.session_state.tunnel_url.rstrip("/")
+                            api_key = st.secrets.get("CLOUD_CFO_API_KEY", "3d4c5eb8-9fe0-4458-882d-5750d9a78947")
                             headers = {
                                 "X-API-KEY": api_key,
                                 "bypass-tunnel-reminder": "true" # Bypass Localtunnel safety page
