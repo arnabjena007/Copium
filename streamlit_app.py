@@ -219,6 +219,11 @@ def compute_totals(records: List[Dict[str, Any]], fixed: bool) -> Dict[str, floa
 
 def build_cost_figure(records: List[Dict[str, Any]], fixed: bool) -> go.Figure:
     df = pd.DataFrame(records)
+    if df.empty or "timestamp" not in df.columns or "cost_usd" not in df.columns:
+        fig = go.Figure()
+        fig.update_layout(title="No data available yet...")
+        return fig
+        
     # Convert timestamp to date for daily aggregation
     df["date"] = pd.to_datetime(df["timestamp"]).dt.date
 
@@ -314,6 +319,11 @@ def build_cost_figure(records: List[Dict[str, Any]], fixed: bool) -> go.Figure:
 
 def build_cpu_cost_scatter(records: List[Dict[str, Any]]) -> go.Figure:
     df = pd.DataFrame(records)
+    if df.empty or "cpu_usage_pct" not in df.columns or "cost_usd" not in df.columns:
+        fig = go.Figure()
+        fig.update_layout(margin={"l": 16, "r": 16, "t": 32, "b": 16}, title="Waiting for ML discovery data...")
+        return fig
+        
     anomalies = df[df["is_anomaly"] == True]
     normal = df[df["is_anomaly"] == False]
 
@@ -357,6 +367,11 @@ def build_cpu_cost_scatter(records: List[Dict[str, Any]]) -> go.Figure:
 
 def build_service_donut(records: List[Dict[str, Any]]) -> go.Figure:
     df = pd.DataFrame(records)
+    if df.empty or "service" not in df.columns or "cost_usd" not in df.columns:
+        fig = go.Figure()
+        fig.update_layout(title="Service Distribution (N/A)")
+        return fig
+        
     service_sum = df.groupby("service")["cost_usd"].sum().reset_index()
 
     fig = go.Figure(
@@ -386,6 +401,11 @@ def build_service_donut(records: List[Dict[str, Any]]) -> go.Figure:
 
 def build_env_bar(records: List[Dict[str, Any]]) -> go.Figure:
     df = pd.DataFrame(records)
+    if df.empty or "environment" not in df.columns or "cost_usd" not in df.columns:
+        fig = go.Figure()
+        fig.update_layout(title="Efficiency by Environment (N/A)")
+        return fig
+        
     env_sum = df.groupby("environment")["cost_usd"].sum().reset_index()
 
     fig = go.Figure(
@@ -412,6 +432,11 @@ def build_env_bar(records: List[Dict[str, Any]]) -> go.Figure:
 
 def build_anomaly_heatmap(records: List[Dict[str, Any]]) -> go.Figure:
     df = pd.DataFrame(records)
+    if df.empty or "timestamp" not in df.columns or "cost_usd" not in df.columns:
+        fig = go.Figure()
+        fig.update_layout(title="Hotspot Matrix (Waiting for data...)")
+        return fig
+        
     df["timestamp"] = pd.to_datetime(df["timestamp"])
     df["hour"] = df["timestamp"].dt.hour
     df["day"] = df["timestamp"].dt.day_name()
