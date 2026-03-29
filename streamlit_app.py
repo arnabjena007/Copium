@@ -871,8 +871,14 @@ def main() -> None:
 
     # Calculate Dynamic Evaluation Statistics
     df = pd.DataFrame(records)
-    p95_cost = float(df["cost_usd"].quantile(0.95))
-    median_cpu = float(df["cpu_usage_pct"].median())
+    
+    # 🛡️ Defensive checks for empty datasets
+    if df.empty or "cost_usd" not in df.columns or "cpu_usage_pct" not in df.columns:
+        p95_cost = 0.0
+        median_cpu = 0.0
+    else:
+        p95_cost = float(df["cost_usd"].quantile(0.95))
+        median_cpu = float(df["cpu_usage_pct"].median())
 
     st.markdown(
         f"""
