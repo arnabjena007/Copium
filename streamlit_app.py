@@ -99,18 +99,33 @@ if "alert_sent" not in st.session_state:
     st.session_state.alert_sent = False
 
 
+@st.cache_data(ttl=60)
 def load_data(live: bool = False) -> List[Dict[str, Any]]:
-    if live:
+    # 🏹 NEW: Use Local Hub Tunnel instead of 127.0.0.1
+    tunnel_url = st.session_state.get("tunnel_url")
+    api_key = st.secrets.get("CLOUD_CFO_API_KEY", "3d4c5eb8-9fe0-4458-882d-5750d9a78947")
+    
+    if live and tunnel_url:
         try:
-            resp = requests.get("http://127.0.0.1:8000/api/dashboard?live=True", timeout=30)
+            hub_url = tunnel_url.rstrip("/")
+            # We fetch straight from your Local Hub via the tunnel
+            headers = {"X-API-KEY": api_key}
+            resp = requests.get(f"{hub_url}/api/ml/anomalies", headers=headers, timeout=20)
             if resp.status_code == 200:
-                data = resp.json()
-                # Stash live metrics in session state for totals calculation
-                st.session_state.live_metrics = data.get("live_metrics")
-                return data.get("recent_actions", [])
+                data = resp.json().get("data", [])
+                # Sync live metrics based on fetched anomalies
+                if data:
+                    df = pd.DataFrame(data)
+                    st.session_state.live_metrics = {
+                        "total_burn": float(df["cost_usd"].sum()),
+                        "anomalies": int(df["is_anomaly"].sum()),
+                        "wasted": float(df[df["is_anomaly"]]["cost_usd"].sum() * 0.85)
+                    }
+                return data
         except Exception as e:
-            st.error(f"Failed to fetch live data: {e}. Falling back to mock.")
+            st.error(f"🔌 Connection Lost to Local Hub: {e}")
 
+    # Fallback to mock if not connected
     with DATA_PATH.open("r", encoding="utf-8") as handle:
         payload = json.load(handle)
     return payload
@@ -703,8 +718,20 @@ def generate_consultant_insight(payload: dict, spike_impact: float) -> str:
 
 def main() -> None:
     st.set_page_config(
-        page_title="Infrastructure Anomaly Engine", page_icon="⚙️", layout="wide", initial_sidebar_state="collapsed"
+        page_title="Infrastructure Anomaly Engine", page_icon="⚙️", layout="wide"
     )
+
+    # 🏹 NEW: Add Connection Sidebar (Visible on Vercel/Cloud to link back to local)
+    with st.sidebar:
+        st.title("🔐 Local Hub Connection")
+        st.session_state.tunnel_url = st.text_input(
+            "Localtunnel URL", 
+            value=st.session_state.get("tunnel_url", ""),
+            placeholder="https://example.loca.lt"
+        )
+        st.caption("Linking your local Anomaly Engine to the Cloud Dashboard.")
+        st.divider()
+
     inject_styles()
 
     if "aws_connected" not in st.session_state:
@@ -729,25 +756,32 @@ def main() -> None:
             )
 
             if st.button("Connect & Audit", type="primary", use_container_width=True):
-                if arn:
-                    with st.spinner("Validating IAM Role with Backend Engine..."):
+                if arn and st.session_state.get("tunnel_url"):
+                    with st.spinner("Validating IAM Role via TunnelBridge..."):
                         try:
-                            auth_resp = requests.post("http://127.0.0.1:8000/api/auth/validate-arn", json={"arn": arn}, timeout=5)
+                            # 🏹 Use the tunnel_url here!
+                            hub_url = st.session_state.tunnel_url.rstrip("/")
+                            api_key = st.secrets.get("CLOUD_CFO_API_KEY", "3d4c5eb8-9fe0-4458-882d-5750d9a78947")
+                            headers = {"X-API-KEY": api_key}
+                            
+                            # Authenticate with your local machine
+                            auth_resp = requests.post(f"{hub_url}/api/auth/validate-arn", 
+                                                    json={"arn": arn}, 
+                                                    headers=headers, 
+                                                    timeout=10)
                             if auth_resp.status_code == 200:
-                                with st.spinner("Authenticating with AWS STS..."):
-                                    time.sleep(1.2)
-                                with st.spinner("Fetching 46,000+ Hourly Cost Explorer Metrics..."):
-                                    time.sleep(1.8)
-                                with st.spinner("Isolating anomalies via Machine Learning..."):
+                                with st.spinner("Handshaking with Local Hub..."):
                                     time.sleep(1.2)
                                 st.session_state.aws_connected = True
                                 st.rerun()
                             else:
-                                st.error("❌ Access Denied: Unauthorized Client ARN.")
+                                st.error("❌ Invalid ARN or Security Key. Try 'arn:aws:iam::100731996973:user/HackathonUser'")
                         except Exception as e:
-                            st.error(f"❌ Connection Error: Backend engine is offline ({e})")
-                else:
+                            st.error(f"❌ Could not reach Local Hub: {e}")
+                elif not arn:
                     st.warning("⚠️ Please provide a valid IAM Role ARN.")
+                else:
+                    st.warning("⚠️ Enter your Localtunnel URL in the sidebar first.")
         return
         return
 
@@ -988,11 +1022,14 @@ def main() -> None:
                 }
             }
             try:
-                save_resp = requests.post("http://127.0.0.1:8000/api/config", json=updated_config, timeout=5)
+                tunnel_url = st.session_state.get("tunnel_url", "http://127.0.0.1:8000").rstrip("/")
+                api_key = st.secrets.get("CLOUD_CFO_API_KEY", "3d4c5eb8-9fe0-4458-882d-5750d9a78947")
+                headers = {"X-API-KEY": api_key}
+                save_resp = requests.post(f"{tunnel_url}/api/config", json=updated_config, headers=headers, timeout=5)
                 if save_resp.status_code == 200:
-                    st.success("✅ Config pushed to backend engine.")
+                    st.success("✅ Config pushed to local backend engine.")
                 else:
-                    st.error("❌ Failed to sync with engine.")
+                    st.error(f"❌ Failed to sync: {save_resp.text}")
             except Exception as e:
                 st.error(f"❌ Connection error: {e}")
 

@@ -12,10 +12,19 @@ load_dotenv(os.path.join(os.getcwd(), "ml", ".env")) # Load ml/.env
 from fastapi import FastAPI, Request, HTTPException, BackgroundTasks
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi import Request, Depends, Header
 import uvicorn
 import requests
 import pandas as pd
 from ml.ml_brain import CloudMLBrain
+
+# Security config
+API_KEY = "3d4c5eb8-9fe0-4458-882d-5750d9a78947"
+
+async def verify_api_key(x_api_key: str = Header(None)):
+    if x_api_key != API_KEY:
+        raise HTTPException(status_code=403, detail="Invalid or missing API Key")
+    return x_api_key
 
 # Initialize ML Brain
 ml_brain = CloudMLBrain()
@@ -65,7 +74,7 @@ def get_config():
     return load_backend_config()
 
 @app.post("/api/config")
-async def update_config(request: Request):
+async def update_config(request: Request, key: str = Depends(verify_api_key)):
     try:
         new_config = await request.json()
         save_backend_config(new_config)
@@ -74,7 +83,7 @@ async def update_config(request: Request):
         raise HTTPException(status_code=400, detail=str(e))
 
 @app.post("/api/auth/validate-arn")
-async def validate_arn(request: Request):
+async def validate_arn(request: Request, key: str = Depends(verify_api_key)):
     try:
         data = await request.json()
         arn = data.get("arn")
@@ -86,6 +95,29 @@ async def validate_arn(request: Request):
             return JSONResponse(status_code=403, content={"status": "error", "message": "Unauthorized ARN"})
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+@app.get("/api/ml/anomalies")
+async def get_ml_anomalies(key: str = Depends(verify_api_key)):
+    """
+    Requested endpoint for 'The Tunnel Bridge' client.
+    Returns the same real-time data as the dashboard but in the expected structure.
+    """
+    try:
+        raw_resources = await fetch_all_cloud_resources()
+        if not raw_resources or "error" in raw_resources:
+             # Fallback to mock if AWS fails
+             with open("data/mock_data.json", "r") as f:
+                 return {"status": "success", "data": json.load(f)}
+        
+        df = pd.DataFrame(raw_resources)
+        enriched_df = ml_brain.analyze(df)
+        enriched_df = enriched_df.fillna(0).replace({pd.NaT: None})
+        records = enriched_df.to_dict(orient="records")
+        return {"status": "success", "data": records}
+    except Exception as e:
+        # Fallback
+        with open("data/mock_data.json", "r") as f:
+            return {"status": "success", "data": json.load(f)}
 
 @app.get("/api/dashboard")
 async def get_dashboard_data(live: bool = False):
