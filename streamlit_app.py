@@ -111,9 +111,13 @@ def load_data(live: bool = False) -> List[Dict[str, Any]]:
             hub_url = tunnel_url.rstrip("/")
             headers = {
                 "X-API-KEY": api_key,
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
                 "bypass-tunnel-reminder": "true" 
             }
             resp = requests.get(f"{hub_url}/api/ml/anomalies", headers=headers, timeout=20)
+            
+            # Show live status in sidebar
+            st.sidebar.caption(f"📡 Bridge Response: {resp.status_code}")
             
             if resp.status_code == 200:
                 data = resp.json().get("data", [])
