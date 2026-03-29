@@ -21,7 +21,7 @@ from ml.ml_brain import CloudMLBrain
 # Security config
 API_KEY = "3d4c5eb8-9fe0-4458-882d-5750d9a78947"
 
-async def verify_api_key(x_api_key: str = Header(None)):
+async def verify_api_key(x_api_key: str = Header(None, alias="X-API-KEY")):
     if x_api_key != API_KEY:
         raise HTTPException(status_code=403, detail="Invalid or missing API Key")
     return x_api_key
